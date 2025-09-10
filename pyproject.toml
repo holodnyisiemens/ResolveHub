@@ -3,7 +3,7 @@ name = "resolvehub"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Alexey Ustinov",email = "idolexe@yandex.ru"}
+    {name = "Alexey Ustinov",email = "idolexey@yandex.ru"}
 ]
 readme = "README.md"
 requires-python = ">=3.10"
