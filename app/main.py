@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 import uvicorn
 
+
 app = FastAPI()
+
 
 @app.head("/")
 def read_root(): ...
