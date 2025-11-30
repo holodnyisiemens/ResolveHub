@@ -32,4 +32,7 @@ class TaskUpdateDTO(BaseDTO):
     status: Optional[TaskStatus]
     assignee_id: Optional[int]
 
-    model_config = BaseDTO.model_config.copy(update={"extra": "forbid"})
+    model_config = ConfigDict(
+        from_attributes=True,
+        extra="forbid",
+    )

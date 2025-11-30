@@ -23,4 +23,7 @@ class EmployeeUpdateDTO(BaseDTO):
     email: Optional[EmailStr]
     is_active: Optional[bool]
 
-    model_config = BaseDTO.model_config.copy(update={"extra": "forbid"})
+    model_config = ConfigDict(
+        from_attributes=True,
+        extra="forbid",
+    )
