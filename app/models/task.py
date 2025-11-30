@@ -1,4 +1,4 @@
-from pydantic import EmailStr
+from sqlalchemy import Enum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from core.database import Base
@@ -9,8 +9,12 @@ class Task(Base):
     __tablename__ = "tasks"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str]
-    description: Mapped[str]
-    creator_email: Mapped[EmailStr]
-    status: Mapped[TaskStatus]
-    assignee_id: Mapped[int]
+    title: Mapped[str] = mapped_column(nullable=True)
+    description: Mapped[str] = mapped_column(nullable=True)
+    creator_email: Mapped[str] = mapped_column(nullable=False)
+    status: Mapped[TaskStatus] = mapped_column(
+        Enum(TaskStatus),
+        default=TaskStatus.NEW,
+        nullable=False,
+    )
+    assignee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"), nullable=True)
