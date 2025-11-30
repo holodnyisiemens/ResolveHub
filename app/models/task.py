@@ -1,8 +1,8 @@
 from sqlalchemy import Enum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
-from core.database import Base
-from schemas.task import TaskStatus
+from app.core.database import Base
+from app.schemas.task import TaskStatus
 
 
 class Task(Base):
