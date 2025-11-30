@@ -15,6 +15,13 @@ class Settings(BaseSettings):
             f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD.get_secret_value()}@"
             f"{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
         )
+    
+    @property
+    def database_url_psycopg(self) -> str:
+        return (
+            f"postgresql+psycopg://{self.DB_USER}:{self.DB_PASSWORD.get_secret_value()}@"
+            f"{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        )
 
     model_config = SettingsConfigDict(env_file=".env")
 
