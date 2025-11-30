@@ -1,14 +1,14 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from annotated_types import MaxLen, MinLen
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 
-class DTO(BaseModel):
+class BaseDTO(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class EmployeeAddDTO(DTO):
+class EmployeeAddDTO(BaseDTO):
     username: Annotated[str, MinLen(2), MaxLen(30)]
     email: EmailStr
 
@@ -16,3 +16,11 @@ class EmployeeAddDTO(DTO):
 class EmployeeDTO(EmployeeAddDTO):
     id: int
     is_active: bool
+
+
+class EmployeeUpdateDTO(BaseDTO):
+    username: Optional[str]
+    email: Optional[EmailStr]
+    is_active: Optional[bool]
+
+    model_config = BaseDTO.model_config.copy(update={"extra": "forbid"})
