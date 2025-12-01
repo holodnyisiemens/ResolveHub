@@ -69,3 +69,16 @@ class TestEmployeeRepository:
         assert found_employee.id is not None
         assert found_employee.email == employee_data_1.email
         assert found_employee.username == employee_data_1.username
+
+    @pytest.mark.asyncio
+    async def test_get_all(self, employee_repository: EmployeeRepository):
+        await self._create_test_employee(employee_repository, employee_data_1)
+        await self._create_test_employee(employee_repository, employee_data_2)
+
+        employees_list = await employee_repository.get_all()
+
+        employee_emails = [employee.email for employee in employees_list]
+
+        assert len(employees_list) == 2
+        assert employee_emails[0] == employee_data_1.email
+        assert employee_emails[1] == employee_data_2.email

@@ -46,3 +46,8 @@ class EmployeeRepository:
         stmt = select(Employee).where(Employee.email == employee_email)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def get_all(self) -> list[Employee]:
+        stmt = select(Employee)
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
