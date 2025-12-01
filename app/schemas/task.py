@@ -27,10 +27,10 @@ class TaskDTO(TaskAddDTO):
 
 
 class TaskUpdateDTO(BaseDTO):
-    title: Optional[str]
-    description: Optional[str]
-    status: Optional[TaskStatus]
-    assignee_id: Optional[int]
+    title: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[TaskStatus] = None
+    assignee_id: Optional[int] = None
 
     model_config = ConfigDict(
         from_attributes=True,

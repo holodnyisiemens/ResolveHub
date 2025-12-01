@@ -19,9 +19,9 @@ class EmployeeDTO(EmployeeAddDTO):
 
 
 class EmployeeUpdateDTO(BaseDTO):
-    username: Optional[str]
-    email: Optional[EmailStr]
-    is_active: Optional[bool]
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+    is_active: Optional[bool] = None
 
     model_config = ConfigDict(
         from_attributes=True,
