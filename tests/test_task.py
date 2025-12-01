@@ -53,3 +53,16 @@ class TestTaskRepository:
 
         found_task = await task_repository.get_by_id(task.id)
         assert found_task is None
+
+    @pytest.mark.asyncio
+    async def test_get_all(self, task_repository: TaskRepository):
+        await self._create_test_task(task_repository, task_data_1)
+        await self._create_test_task(task_repository, task_data_2)
+
+        tasks_list = await task_repository.get_all()
+
+        task_creator_emails = [task.creator_email for task in tasks_list]
+
+        assert len(tasks_list) == 2
+        assert task_creator_emails[0] == task_data_1.creator_email
+        assert task_creator_emails[1] == task_data_2.creator_email

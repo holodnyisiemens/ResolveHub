@@ -1,5 +1,6 @@
 from typing import Optional
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.task import Task
@@ -35,3 +36,8 @@ class TaskRepository:
         await self.session.refresh(task)
 
         return task
+
+    async def get_all(self) -> list[Task]:
+        stmt = select(Task)
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
