@@ -22,20 +22,11 @@ class TaskRepository:
         
         return task
 
-    async def delete(self, task_id: int) -> bool:
-        task = await self.session.get(Task, task_id)
-        if not task:
-            return False
-        
+    async def delete(self, task: Task) -> None:
         await self.session.delete(task)
         await self.session.flush()
-        return True
 
-    async def update(self, task_id: int, task_data: TaskUpdateDTO) -> Optional[Task]:
-        task = await self.session.get(Task, task_id)
-        if not task:
-            return None
-
+    async def update(self, task: Task, task_data: TaskUpdateDTO) -> Task:
         update_data = task_data.model_dump(exclude_unset=True)
         for field, value in update_data.items():
             setattr(task, field, value)
