@@ -24,7 +24,7 @@ class EmployeeService:
             await self.employee_repo.session.commit()
         except:
             await self.employee_repo.session.rollback()
-            raise HTTPException(status_code=409, detail=f"Employee creation error")
+            raise HTTPException(status_code=400, detail=f"Employee creation error")
 
         return EmployeeDTO.model_validate(employee)
 
@@ -33,8 +33,12 @@ class EmployeeService:
         if not employee:
             raise HTTPException(status_code=404, detail=f"Employee with ID {employee_id} not found")
 
-        await self.employee_repo.delete(employee)
-        await self.employee_repo.session.commit()
+        try:
+            await self.employee_repo.delete(employee)
+            await self.employee_repo.session.commit()
+        except:
+            await self.employee_repo.session.rollback()
+            raise HTTPException(status_code=400, detail=f"Employee delete error")   
 
     async def update(self, employee_id: int, employee_data: EmployeeUpdateDTO) -> EmployeeDTO:
         employee = await self.employee_repo.get_by_id(employee_id)
@@ -46,7 +50,7 @@ class EmployeeService:
             await self.employee_repo.session.commit()
         except:
             await self.employee_repo.session.rollback()
-            raise HTTPException(status_code=409, detail=f"Employee update error")    
+            raise HTTPException(status_code=400, detail=f"Employee update error")    
 
         return EmployeeDTO.model_validate(employee)
 
