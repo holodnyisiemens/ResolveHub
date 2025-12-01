@@ -34,7 +34,7 @@ class TestEmployeeRepository:
 
         new_employee_data = EmployeeUpdateDTO(username="Updated")
 
-        await employee_repository.update(employee.id, new_employee_data)
+        await employee_repository.update(employee, new_employee_data)
         updated_employee = await employee_repository.get_by_id(employee.id)
 
         assert updated_employee.username == new_employee_data.username
@@ -45,7 +45,27 @@ class TestEmployeeRepository:
     @pytest.mark.asyncio
     async def test_delete_employee(self, employee_repository: EmployeeRepository):
         employee = await self._create_test_employee(employee_repository, employee_data_1)
-        await employee_repository.delete(employee.id)
+        await employee_repository.delete(employee)
 
         found_employee = await employee_repository.get_by_id(employee.id)
         assert found_employee is None
+
+    @pytest.mark.asyncio
+    async def test_get_by_username(self, employee_repository: EmployeeRepository):
+        await self._create_test_employee(employee_repository, employee_data_1)
+
+        found_employee = await employee_repository.get_by_username(employee_data_1.username)
+
+        assert found_employee.id is not None
+        assert found_employee.email == employee_data_1.email
+        assert found_employee.username == employee_data_1.username
+
+    @pytest.mark.asyncio
+    async def test_get_by_email(self, employee_repository: EmployeeRepository):
+        await self._create_test_employee(employee_repository, employee_data_1)
+
+        found_employee = await employee_repository.get_by_email(employee_data_1.email)
+
+        assert found_employee.id is not None
+        assert found_employee.email == employee_data_1.email
+        assert found_employee.username == employee_data_1.username
