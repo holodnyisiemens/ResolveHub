@@ -37,7 +37,7 @@ class TestTaskRepository:
 
         new_task_data = TaskUpdateDTO(title="Resolved")
 
-        await task_repository.update(task.id, new_task_data)
+        await task_repository.update(task, new_task_data)
         updated_task = await task_repository.get_by_id(task.id)
 
         assert updated_task.title == new_task_data.title
@@ -49,9 +49,31 @@ class TestTaskRepository:
     @pytest.mark.asyncio
     async def test_delete_task(self, task_repository: TaskRepository):
         task = await self._create_test_task(task_repository, task_data_1)
-        await task_repository.delete(task.id)
+        await task_repository.delete(task)
 
         found_task = await task_repository.get_by_id(task.id)
         assert found_task is None
 
 
+# @pytest.mark.asyncio
+    # async def test_get_all_tasks(self, task_repository: TaskRepository):
+    #     await self._create_test_task(task_repository, task_data_1)
+    #     await self._create_test_task(task_repository, task_data_2)
+
+    #     tasks_list = await task_repository.get_by_filter()
+
+    #     task_emails = [task.email for task in tasks_list]
+
+    #     assert len(tasks_list) == 2
+    #     assert task_emails[0] == task_data_1.email
+    #     assert task_emails[1] == task_data_2.email
+
+    # @pytest.mark.asyncio
+    # async def test_get_task_by_email(self, task_repository: TaskRepository):
+    #     await self._create_test_task(task_repository, task_data_1)
+
+    #     found_task = await task_repository.get_by_email(task_data_1.email)
+
+    #     assert found_task.id is not None
+    #     assert found_task.email == task_data_1.email
+    #     assert found_task.username == task_data_1.username
