@@ -1,13 +1,8 @@
-from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 
-
-class TaskStatus(str, Enum):
-    NEW = "new"
-    IN_PROGRESS = "in_progress"
-    DONE = "done"
+from app.models.task import TaskStatus
 
 
 class BaseDTO(BaseModel):
