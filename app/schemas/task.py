@@ -11,7 +11,10 @@ class TaskStatus(str, Enum):
 
 
 class BaseDTO(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        extra="forbid",
+    )
 
 
 class TaskAddDTO(BaseDTO):
@@ -31,8 +34,3 @@ class TaskUpdateDTO(BaseDTO):
     description: Optional[str] = None
     status: Optional[TaskStatus] = None
     assignee_id: Optional[int] = None
-
-    model_config = ConfigDict(
-        from_attributes=True,
-        extra="forbid",
-    )
