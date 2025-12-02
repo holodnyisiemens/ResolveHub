@@ -1,14 +1,35 @@
-from fastapi import Depends, HTTPException, status
+from sqladmin.authentication import AuthenticationBackend
+from starlette.requests import Request
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi import Depends, HTTPException, status
 from app.repositories.employee_repository import EmployeeRepository
-from app.core.database import async_session
+from app.core.database import async_session_factory
 from app.core.security import verify_password
+
 security = HTTPBasic()
 
-async def get_current_employee(credentials: HTTPBasicCredentials = Depends(security)):
-    async with async_session() as session:
-        repo = EmployeeRepository(session)
-        employee = await repo.get_by_username(credentials.username)  # Добавьте этот метод в репозиторий
-        if not employee or not verify_password(credentials.password, employee.hashed_password):  # Реализуйте verify_password
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
-        return employee
+class AdminAuth(AuthenticationBackend):
+    middlewares = []
+    
+    def __init__(self, secret_key: str):
+        self.secret_key = secret_key
+
+    async def login(self, request: Request) -> bool:
+        credentials: HTTPBasicCredentials = await request.form()
+        username = credentials.get("username")
+        password = credentials.get("password")
+        async with async_session_factory() as session:
+            repo = EmployeeRepository(session)
+            employee = await repo.get_by_username(username)
+            if employee and verify_password(password, employee.hashed_password):
+                # Можно проверить secret_key для токена сессии или пропустить
+                request.session.update({"token": self.secret_key})
+                return True
+        return False
+
+    async def logout(self, request: Request) -> None:
+        request.session.clear()
+
+    async def authenticate(self, request: Request) -> bool:
+        token = request.session.get("token")
+        return token == self.secret_key
