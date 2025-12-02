@@ -1,13 +1,14 @@
+import sys
+import asyncio
+
+if sys.platform.startswith("win"):
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+from fastapi import FastAPI
 from fastapi import FastAPI
 import uvicorn
-
-
-app = FastAPI()
-
-
-@app.head("/")
-def read_root(): ...
-
+from app.admin.admin import app
 
 if __name__ == "__main__":
-    uvicorn.run(app="main:app", reload=True)
+    import uvicorn
+    uvicorn.run("app.admin.admin:app", host="127.0.0.1", port=8000, reload=True)
