@@ -13,15 +13,15 @@ class BaseDTO(BaseModel):
 
 
 class TaskAddDTO(BaseDTO):
-    title: str
-    description: str
+    title: Optional[str] = None
+    description: Optional[str] = None
     creator_email: EmailStr
 
 
 class TaskDTO(TaskAddDTO):
     id: int
     status: TaskStatus
-    assignee_id: int
+    assignee_id: Optional[int]
 
 
 class TaskUpdateDTO(BaseDTO):
