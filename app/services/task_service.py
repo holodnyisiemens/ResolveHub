@@ -1,12 +1,14 @@
 from fastapi import HTTPException
 
+from app.repositories.employee_repository import EmployeeRepository
 from app.repositories.task_repository import TaskRepository
 from app.schemas.task import TaskAddDTO, TaskDTO, TaskUpdateDTO
 
 
 class TaskService:
-    def __init__(self, task_repo: TaskRepository):
+    def __init__(self, task_repo: TaskRepository, employee_repo: EmployeeRepository):
         self.task_repo = task_repo
+        self.employee_repo = employee_repo
 
     async def get_by_id(self, task_id: int) -> TaskDTO:
         task = await self.task_repo.get_by_id(task_id)
@@ -41,6 +43,11 @@ class TaskService:
         task = await self.task_repo.get_by_id(task_id)
         if not task:
             raise HTTPException(status_code=404, detail=f"Task with ID {task_id} not found")
+
+        if task_data.assignee_id is not None:
+            assignee = await self.employee_repo.get_by_id(task_data.assignee_id)
+            if not assignee:
+                raise HTTPException(status_code=404, detail=f"Employee with ID {task_data.assignee_id} does not exist")
 
         try:
             await self.task_repo.update(task, task_data)
