@@ -45,7 +45,7 @@ class EmployeeService:
         if not employee:
             raise HTTPException(status_code=404, detail=f"Employee with ID {employee_id} not found")
 
-        if employee_data.email:
+        if employee_data.email is not None:
             existing_employee = await self.employee_repo.get_by_email(employee_data.email)
             if existing_employee and existing_employee.id != employee.id:
                 raise HTTPException(
