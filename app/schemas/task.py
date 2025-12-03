@@ -1,29 +1,27 @@
-from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 
-
-class TaskStatus(str, Enum):
-    NEW = "new"
-    IN_PROGRESS = "in_progress"
-    DONE = "done"
+from app.models.task import TaskStatus
 
 
 class BaseDTO(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        extra="forbid",
+    )
 
 
 class TaskAddDTO(BaseDTO):
-    title: str
-    description: str
+    title: Optional[str] = None
+    description: Optional[str] = None
     creator_email: EmailStr
 
 
 class TaskDTO(TaskAddDTO):
     id: int
     status: TaskStatus
-    assignee_id: int
+    assignee_id: Optional[int]
 
 
 class TaskUpdateDTO(BaseDTO):
@@ -31,8 +29,3 @@ class TaskUpdateDTO(BaseDTO):
     description: Optional[str] = None
     status: Optional[TaskStatus] = None
     assignee_id: Optional[int] = None
-
-    model_config = ConfigDict(
-        from_attributes=True,
-        extra="forbid",
-    )

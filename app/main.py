@@ -4,17 +4,17 @@ from sqladmin import Admin
 from app.core.database import sync_engine
 from app.auth import AdminAuth
 from app.admin.admin import EmployeeAdmin, TaskAdmin
-from app.routes.employee_router import router as employee_router
-from app.routes.task_router import router as task_router
 from starlette.middleware.sessions import SessionMiddleware
 
+from app.api import router as api_router
+from app.core.config import settings
+
 app = FastAPI()
-
-# Подключаем API роутеры
-app.include_router(employee_router, prefix="/employees", tags=["employees"])
-app.include_router(task_router, prefix="/tasks", tags=["tasks"])  # Роутинг для tasks
-
-# Добавьте middleware для сессий — обязательно для работы AdminAuth
+app.include_router(
+    api_router,
+    prefix=settings.api.prefix,
+)
+# Middleware для сессий и для работы AdminAuth
 app.add_middleware(SessionMiddleware, secret_key="SUPER_SECRET_KEY")
 
 # Подключаем админку
@@ -30,4 +30,9 @@ admin.add_view(TaskAdmin)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", reload=True)
+    uvicorn.run(
+        app="app.main:app",
+        host=settings.run.host,
+        port=settings.run.port,
+        reload=True,
+    )

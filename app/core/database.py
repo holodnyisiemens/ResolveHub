@@ -10,7 +10,7 @@ class Base(DeclarativeBase):
 
 
 async_engine = create_async_engine(
-    settings.database_url_async,
+    settings.database_url_asyncpg,
     echo=False,
 )
 
@@ -21,7 +21,7 @@ async_session_factory = async_sessionmaker(
 )
 
 sync_engine = create_engine(
-    settings.database_url_sync,  # добавление синхронного URL в config
+    settings.database_url_syncpg,  # добавление синхронного URL в config
     echo=False,
     future=True
 )
