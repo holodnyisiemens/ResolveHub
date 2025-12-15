@@ -10,4 +10,8 @@ class Employee(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(50), nullable=False)
     email: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
+    # Хэш пароля
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+    # Флаги
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    is_superuser: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

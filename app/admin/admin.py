@@ -12,7 +12,7 @@ class EmployeeAdmin(ModelView, model=Employee):
     column_list = [Employee.id, Employee.username, Employee.email, Employee.is_active]
 
 class TaskAdmin(ModelView, model=Task):
-    column_list = [Task.id, Task.title, Task.description, Task.creator_email, Task.status, Task.assignee_id]
+    column_list = [Task.id, Task.title, Task.description, Task.creator_email, Task.status, Task.assignee_id, Task.created_at]
 
 admin.add_view(EmployeeAdmin)
 admin.add_view(TaskAdmin)

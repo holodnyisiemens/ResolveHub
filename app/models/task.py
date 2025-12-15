@@ -5,6 +5,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
 
+from sqlalchemy import DateTime
+from sqlalchemy.sql import func
 
 class TaskStatus(PyEnum):
     NEW = "new"
@@ -30,5 +32,10 @@ class Task(Base):
     assignee_id: Mapped[int] = mapped_column(
         ForeignKey("employees.id"), 
         nullable=True,
+    )
+    created_at: Mapped[DateTime] = mapped_column(
+        DateTime(timezone=True), 
+        server_default=func.now(),
+        nullable=False
     )
 

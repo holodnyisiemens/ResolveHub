@@ -9,6 +9,8 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.api import router as api_router
 from app.core.config import settings
 
+from app.routes.tasks_page import router as tasks_page_router
+
 app = FastAPI()
 app.include_router(
     api_router,
@@ -27,6 +29,8 @@ admin = Admin(
 # Регистрируем представления моделей в админке
 admin.add_view(EmployeeAdmin)
 admin.add_view(TaskAdmin)
+
+app.include_router(tasks_page_router)
 
 if __name__ == "__main__":
     import uvicorn

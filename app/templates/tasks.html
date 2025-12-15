@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список задач</title>
+    <style>
+        body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; max-width: 1400px; margin: 0 auto; padding: 20px; background: #f8f9fa; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .filters { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .filter-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: end; }
+        .filter-group { display: flex; flex-direction: column; gap: 5px; }
+        .filter-group label { font-weight: 600; color: #2c3e50; font-size: 14px; }
+        .filter-group select, .filter-group input { padding: 10px 12px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px; }
+        .filter-group select:focus, .filter-group input:focus { outline: none; border-color: #667eea; }
+        .clear-filters { background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block; }
+        .clear-filters:hover { background: #5a6268; }
+        .columns { display: flex; gap: 40px; }
+        .column { flex: 1; }
+        .column h2 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .task { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .task:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .task.new { border-left: 5px solid #007bff; }
+        .task.in_progress { border-left: 5px solid #ffc107; }
+        .task.done { background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border-left: 5px solid #28a745; }
+        .task-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: #2c3e50; }
+        .task-description { color: #7f8c8d; margin-bottom: 12px; line-height: 1.5; }
+        .task-meta { display: flex; gap: 20px; font-size: 14px; color: #95a5a6; flex-wrap: wrap; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+        .status-new { background: #cce5ff; color: #004085; }
+        .status-in_progress { background: #fff3cd; color: #856404; }
+        .status-done { background: #d4edda; color: #155724; }
+        .empty { text-align: center; color: #95a5a6; font-style: italic; padding: 40px; }
+        .error-message { 
+            background: #f8d7da; 
+            color: #721c24; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #f5c6cb; 
+            margin-bottom: 20px; 
+            text-align: center;
+            font-weight: 500;
+        }
+        .filter-required { color: #dc3545; }
+        @media (max-width: 768px) { 
+            .columns { flex-direction: column; gap: 20px; } 
+            .filter-row { flex-direction: column; } 
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📋 Все имеющиеся задачи ResolveHub</h1>
+    </div>
+    
+    <!-- Скрытое сообщение об ошибке (для SEO/доступности) -->
+    {% if error_message %}
+        <div class="error-message" style="display: none;">{{ error_message }}</div>
+    {% endif %}
+    
+    <!-- Фильтры -->
+    <div class="filters">
+        <form method="GET">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>Статус <span class="filter-required">*</span>:</label>
+                    <select name="status" required>
+                        <option value="" disabled {% if not filters.status %}selected{% endif %}>Выберите статус</option>
+                        <option value="new" {% if filters.status == 'new' %}selected{% endif %}>Новые</option>
+                        <option value="in_progress" {% if filters.status == 'in_progress' %}selected{% endif %}>В работе</option>
+                        <option value="done" {% if filters.status == 'done' %}selected{% endif %}>Выполненные</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>С даты <span class="filter-required">*</span>:</label>
+                    <input type="date" name="start_date" value="{{ filters.start_date or '' }}" required>
+                </div>
+                
+                <div class="filter-group">
+                    <label>По дату <span class="filter-required">*</span>:</label>
+                    <input type="date" name="end_date" value="{{ filters.end_date or '' }}" required>
+                </div>
+                
+                <button type="submit" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">🔍 Фильтровать</button>
+                <a href="/tasks/" class="clear-filters">🔄 Очистить</a>
+            </div>
+        </form>
+        <small style="color: #6c757d; display: block; margin-top: 10px;">* Обязательные поля</small>
+    </div>
+    
+    <!-- Результаты -->
+    <div class="columns">
+        <div class="column">
+            <h2>👤 Назначенные задачи ({{ assigned_tasks|length }})</h2>
+            {% if assigned_tasks %}
+                {% for task in assigned_tasks %}
+                    <div class="task {{ task.status.value }}">
+                        <div class="task-title">{{ task.title or "Без названия" }}</div>
+                        {% if task.description %}
+                            <div class="task-description">{{ task.description }}</div>
+                        {% endif %}
+                        <div class="task-meta">
+                            <span class="status-badge status-{{ task.status.value }}">
+                                {{ task.status.value.replace('_', ' ').title() }}
+                            </span>
+                            <span>👤 ID: {{ task.assignee_id }}</span>
+                            <span>📧 {{ task.creator_email }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty">
+                    {% if error_message %}
+                        Нет назначенных задач
+                    {% else %}
+                        Нет назначенных задач по текущим фильтрам
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="column">
+            <h2>⭕ Свободные задачи ({{ unassigned_tasks|length }})</h2>
+            {% if unassigned_tasks %}
+                {% for task in unassigned_tasks %}
+                    <div class="task {{ task.status.value }}">
+                        <div class="task-title">{{ task.title or "Без названия" }}</div>
+                        {% if task.description %}
+                            <div class="task-description">{{ task.description }}</div>
+                        {% endif %}
+                        <div class="task-meta">
+                            <span class="status-badge status-{{ task.status.value }}">
+                                {{ task.status.value.replace('_', ' ').title() }}
+                            </span>
+                            <span>⭕ Ожидает назначения</span>
+                            <span>📧 {{ task.creator_email }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty">
+                    {% if error_message %}
+                        Нет свободных задач
+                    {% else %}
+                        Нет свободных задач по текущим фильтрам
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Всплывающие уведомления (Toast) -->
+    <script>
+    function showToast(message, type = 'error') {
+        // Создаем toast элемент
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed; top: 20px; right: 20px; z-index: 10000;
+            padding: 16px 24px; border-radius: 8px; font-weight: 600;
+            font-size: 14px; min-width: 300px; max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(400px); transition: transform 0.3s ease;
+            color: white; backdrop-filter: blur(10px);
+        `;
+        
+        // Стили в зависимости от типа
+        if (type === 'error') {
+            toast.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+        }
+        
+        document.body.appendChild(toast);
+        
+        // Анимация появления
+        setTimeout(() => toast.style.transform = 'translateX(0)', 100);
+        
+        // Удаление через 4 секунды
+        setTimeout(() => {
+            toast.style.transform = 'translateX(400px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+    </script>
+</body>
+</html>
