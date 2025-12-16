@@ -15,3 +15,7 @@ class Employee(Base):
     # Флаги
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     is_superuser: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    def __str__(self) -> str:
+        # то, что будет видно в select'е и списках
+        return f"{self.username} ({self.email})"

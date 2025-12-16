@@ -8,6 +8,9 @@ from app.core.database import Base
 from sqlalchemy import DateTime
 from sqlalchemy.sql import func
 
+from sqlalchemy.orm import relationship
+from app.models.employee import Employee
+
 class TaskStatus(PyEnum):
     NEW = "new"
     IN_PROGRESS = "in_progress"
@@ -33,6 +36,7 @@ class Task(Base):
         ForeignKey("employees.id"), 
         nullable=True,
     )
+    assignee: Mapped["Employee"] = relationship("Employee")
     created_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True), 
         server_default=func.now(),
