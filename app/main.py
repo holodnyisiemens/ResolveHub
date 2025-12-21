@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from sqladmin import Admin
 
-from app.core.database import sync_engine
+from app.core.database import async_engine
 from app.auth import AdminAuth
 from app.admin.admin import EmployeeAdmin, TaskAdmin
 from starlette.middleware.sessions import SessionMiddleware
@@ -16,14 +16,15 @@ app.include_router(
     api_router,
     prefix=settings.api.prefix,
 )
+
 # Middleware для сессий и для работы AdminAuth
-app.add_middleware(SessionMiddleware, secret_key="SUPER_SECRET_KEY")
+app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
 
 # Подключаем админку
 admin = Admin(
     app,
-    sync_engine,
-    authentication_backend=AdminAuth(secret_key="SUPER_SECRET_KEY")
+    async_engine,
+    authentication_backend=AdminAuth(secret_key=settings.SECRET_KEY)
 )
 
 # Регистрируем представления моделей в админке

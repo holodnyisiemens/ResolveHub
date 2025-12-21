@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: SecretStr
     DB_NAME: str
+    SECRET_KEY: str
 
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
