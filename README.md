@@ -18,6 +18,9 @@ python -m app.main
 
 ## Использование
 
+Страница задач:
+http://localhost:8000/tasks/
+
 Создание суперюзера:
 ```
 python bin/create_superuser.py <username> <password> <email>
@@ -28,8 +31,5 @@ python bin/create_superuser.py <username> <password> <email>
 python bin/create_superuser.py admin 123456 example@gmail.com
 ```
 
-Все задачи:
-http://localhost:8000/tasks/
-
 Страница админа:
-http://localhost:8000/admin/task/list
+http://localhost:8000/admin/
