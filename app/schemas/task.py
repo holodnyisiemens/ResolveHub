@@ -1,4 +1,5 @@
-from typing import Optional
+from typing import Optional, Annotated
+from annotated_types import MaxLen, MinLen
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 
@@ -9,13 +10,14 @@ class BaseDTO(BaseModel):
     model_config = ConfigDict(
         from_attributes=True,
         extra="forbid",
+        str_strip_whitespace=True,
     )
 
 
 class TaskAddDTO(BaseDTO):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    creator_email: EmailStr
+    title: Optional[Annotated[str, MaxLen(255)]] = None
+    description: Optional[Annotated[str, MaxLen(2000)]] = None
+    creator_email: Annotated[EmailStr, MaxLen(255)]
 
 
 class TaskDTO(TaskAddDTO):
@@ -25,7 +27,7 @@ class TaskDTO(TaskAddDTO):
 
 
 class TaskUpdateDTO(BaseDTO):
-    title: Optional[str] = None
-    description: Optional[str] = None
+    title: Optional[Annotated[str, MaxLen(255)]] = None
+    description: Optional[Annotated[str, MaxLen(2000)]] = None
     status: Optional[TaskStatus] = None
     assignee_id: Optional[int] = None

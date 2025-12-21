@@ -1,20 +1,18 @@
 from enum import Enum as PyEnum
+from typing import Optional
 
-from sqlalchemy import Enum as SQLEnum, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
-
-from app.core.database import Base
-
-from sqlalchemy import DateTime
+from sqlalchemy import Enum as SQLEnum, ForeignKey, DateTime, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
-from sqlalchemy.orm import relationship
+from app.core.database import Base
 from app.models.employee import Employee
 
+
 class TaskStatus(PyEnum):
-    NEW = "new"
-    IN_PROGRESS = "in_progress"
-    DONE = "done"
+    NEW = "NEW"
+    IN_PROGRESS = "IN_PROGRESS"
+    DONE = "DONE"
 
 
 class Task(Base):
@@ -22,24 +20,29 @@ class Task(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     
-    title: Mapped[str] = mapped_column(nullable=True)
-    description: Mapped[str] = mapped_column(nullable=True)
-    creator_email: Mapped[str] = mapped_column(nullable=False)
-    
+    title: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
+    creator_email: Mapped[str] = mapped_column(String(255), nullable=False)
+
     status: Mapped[TaskStatus] = mapped_column(
-        SQLEnum(TaskStatus),
-        default=TaskStatus.NEW,
+        SQLEnum(TaskStatus, name="task_status"),
         nullable=False,
+        default=TaskStatus.NEW,
+        server_default=TaskStatus.NEW.value,
     )
     
-    assignee_id: Mapped[int] = mapped_column(
+    assignee_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("employees.id"), 
         nullable=True,
     )
-    assignee: Mapped["Employee"] = relationship("Employee")
+    
     created_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True), 
         server_default=func.now(),
-        nullable=False
+        nullable=False,
     )
 
+    assignee: Mapped["Employee"] = relationship(
+        "Employee",
+        back_populates="tasks",
+    )
