@@ -1,4 +1,4 @@
-from typing import Optional, Sequence
+from typing import Optional
 
 from datetime import date, datetime
 from sqlalchemy import select
@@ -38,18 +38,18 @@ class TaskRepository:
 
         return task
 
-    async def get_all(self) -> Sequence[Task]:
+    async def get_all(self) -> list[Task]:
         stmt = select(Task)
         result = await self.session.execute(stmt)
         return result.scalars().all()
     
-    async def get_assigned(self) -> Sequence[Task]:
+    async def get_assigned(self) -> list[Task]:
         """Задачи с назначенным сотрудником"""
         stmt = select(Task).where(Task.assignee_id.is_not(None))
         result = await self.session.execute(stmt)
         return result.scalars().all()
 
-    async def get_unassigned(self) -> Sequence[Task]:
+    async def get_unassigned(self) -> list[Task]:
         """Задачи без назначенного сотрудника"""
         stmt = select(Task).where(Task.assignee_id.is_(None))
         result = await self.session.execute(stmt)
@@ -60,7 +60,7 @@ class TaskRepository:
         status_filter: Optional[TaskStatus] = None,
         start_date: Optional[date] = None,
         end_date: Optional[date] = None
-    ) -> Sequence[Task]:
+    ) -> list[Task]:
         """
         Фильтрация задач по статусу и периоду создания
         
@@ -86,6 +86,8 @@ class TaskRepository:
         
         if filters:
             stmt = stmt.where(*filters)
+
+        stmt = stmt.order_by(Task.created_at.desc())
 
         result = await self.session.execute(stmt)
         return result.scalars().all()
