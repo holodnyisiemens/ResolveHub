@@ -1,5 +1,6 @@
 from enum import Enum as PyEnum
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+from datetime import datetime
 
 from sqlalchemy import Enum as SQLEnum, ForeignKey, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -7,6 +8,8 @@ from sqlalchemy.sql import func
 
 from app.core.database import Base
 
+if TYPE_CHECKING:
+    from app.models.employee import Employee
 
 class TaskStatus(PyEnum):
     NEW = "NEW"
@@ -35,8 +38,9 @@ class Task(Base):
         nullable=True,
     )
     
-    created_at: Mapped[DateTime] = mapped_column(
-        DateTime(timezone=True), 
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=datetime.now,
         server_default=func.now(),
         nullable=False,
     )
