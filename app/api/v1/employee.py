@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.api.deps import provide_employee_service
+from app.di.deps import provide_employee_service
 from app.schemas.employee import EmployeeAddDTO, EmployeeDTO, EmployeeUpdateDTO
 from app.services.employee_service import EmployeeService
 
