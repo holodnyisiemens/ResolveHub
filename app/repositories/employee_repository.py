@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Sequence
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,7 +47,7 @@ class EmployeeRepository:
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_all(self) -> list[Employee]:
+    async def get_all(self) -> Sequence[Employee]:
         stmt = select(Employee)
         result = await self.session.execute(stmt)
         return result.scalars().all()

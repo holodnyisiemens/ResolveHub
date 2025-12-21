@@ -1,17 +1,12 @@
-from typing import Optional
-from typing import List
+from typing import Optional, Sequence
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.task import Task
+from app.models.task import Task, TaskStatus
 from app.schemas.task import TaskAddDTO, TaskUpdateDTO
 
-from sqlalchemy import select, and_
-from app.models.task import TaskStatus
-from datetime import date
-from typing import List, Optional
 
 class TaskRepository:
     def __init__(self, session: AsyncSession):
@@ -43,17 +38,29 @@ class TaskRepository:
 
         return task
 
-    async def get_all(self) -> list[Task]:
+    async def get_all(self) -> Sequence[Task]:
         stmt = select(Task)
         result = await self.session.execute(stmt)
         return result.scalars().all()
     
+    async def get_assigned(self) -> Sequence[Task]:
+        """Задачи с назначенным сотрудником"""
+        stmt = select(Task).where(Task.assignee_id.is_not(None))
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
+
+    async def get_unassigned(self) -> Sequence[Task]:
+        """Задачи без назначенного сотрудника"""
+        stmt = select(Task).where(Task.assignee_id.is_(None))
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
+
     async def get_filtered_tasks(
         self,
         status_filter: Optional[TaskStatus] = None,
         start_date: Optional[date] = None,
         end_date: Optional[date] = None
-    ) -> List[Task]:
+    ) -> Sequence[Task]:
         """
         Фильтрация задач по статусу и периоду создания
         
@@ -64,32 +71,21 @@ class TaskRepository:
         """
         stmt = select(Task)
         
-        # Фильтр по статусу
-        if status_filter:
-            stmt = stmt.where(Task.status == status_filter)
+        filters = []
+
+        if status_filter is not None:
+            filters.append(Task.status == status_filter)
+
+        if start_date is not None:
+            start_datetime = datetime.combine(start_date, datetime.min.time())
+            filters.append(Task.created_at >= start_datetime)
+
+        if end_date is not None:
+            end_datetime = datetime.combine(end_date, datetime.max.time())
+            filters.append(Task.created_at <= end_datetime)
         
-        # Фильтр по периоду создания ✅ ИСПРАВЛЕНО
-        if start_date:
-            stmt = stmt.where(Task.created_at >= start_date)
-        
-        if end_date:
-            # Включаем всю дату окончания (до 00:00 следующего дня)
-            end_datetime = datetime.combine(end_date, datetime.max.time()) + timedelta(days=1)
-            stmt = stmt.where(Task.created_at < end_datetime)
-        
+        if filters:
+            stmt = stmt.where(*filters)
+
         result = await self.session.execute(stmt)
-        return result.scalars().all()
-
-    async def get_assigned_tasks(self) -> list[Task]:
-        """Задачи с назначенным сотрудником"""
-        stmt = select(Task).where(Task.assignee_id.is_not(None))
-        result = await self.session.execute(stmt)
-
-        return result.scalars().all()
-
-    async def get_unassigned_tasks(self) -> list[Task]:
-        """Задачи без назначенного сотрудника"""
-        stmt = select(Task).where(Task.assignee_id.is_(None))
-        result = await self.session.execute(stmt)
-
         return result.scalars().all()
