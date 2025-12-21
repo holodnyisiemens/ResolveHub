@@ -1,8 +1,11 @@
+from typing import Optional
+
 from fastapi import HTTPException
 
 from app.repositories.employee_repository import EmployeeRepository
 from app.repositories.task_repository import TaskRepository
 from app.schemas.task import TaskAddDTO, TaskDTO, TaskUpdateDTO
+from app.models.task import TaskStatus
 
 
 class TaskService:
@@ -61,3 +64,16 @@ class TaskService:
     async def get_all(self) -> list[TaskDTO]:
         task_list = await self.task_repo.get_all()
         return [TaskDTO.model_validate(task) for task in task_list]
+    
+    async def get_filtered_tasks(
+        self,
+        status_filter: Optional[TaskStatus] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None
+    ) -> list[TaskDTO]:
+        tasks = await self.task_repo.get_filtered_tasks(
+            status_filter=status_filter,
+            start_date=start_date,
+            end_date=end_date
+        )
+        return [TaskDTO.model_validate(t) for t in tasks]

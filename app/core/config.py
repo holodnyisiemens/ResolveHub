@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: SecretStr
     DB_NAME: str
+    SECRET_KEY: str
+
+    run: RunConfig = RunConfig()
+    api: ApiPrefix = ApiPrefix()
 
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
@@ -42,6 +46,11 @@ class Settings(BaseSettings):
             f"postgresql+psycopg://{self.DB_USER}:{self.DB_PASSWORD.get_secret_value()}@"
             f"{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
         )
-
+    @property
+    def database_url_syncpg(self) -> str:
+        return (
+            f"postgresql+psycopg://{self.DB_USER}:{self.DB_PASSWORD.get_secret_value()}@"
+            f"{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        )
 
 settings = Settings()

@@ -8,11 +8,13 @@ from app.repositories.employee_repository import EmployeeRepository
 employee_data_1 = EmployeeAddDTO(
     username="alexey",
     email="alexey@example.com",
+    password="123456",
 )
 
 employee_data_2 = EmployeeAddDTO(
     username="alexander",
     email="alexander@example.com",
+    password="123456",
 )
 
 

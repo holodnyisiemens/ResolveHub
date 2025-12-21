@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.employee import Employee
 from app.schemas.employee import EmployeeAddDTO, EmployeeUpdateDTO
+from app.core.security import get_password_hash
 
 
 class EmployeeRepository:
@@ -15,7 +16,10 @@ class EmployeeRepository:
         return await self.session.get(Employee, employee_id)
 
     async def create(self, employee_data: EmployeeAddDTO) -> Employee:
-        employee = Employee(**employee_data.model_dump())
+        hashed_password = get_password_hash(employee_data.password)
+        employee_dict = employee_data.model_dump(exclude={"password"})
+        
+        employee = Employee(**employee_dict, hashed_password=hashed_password)
         self.session.add(employee)
         
         await self.session.flush()

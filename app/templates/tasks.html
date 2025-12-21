@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ResolveHub</title>
+    <link rel="stylesheet" href="/static/css/tasks.css">
+</head>
+<body>
+    <h1>ResolveHub</h1>
+
+    <form method="get" class="filter-form">
+        <label>
+            Статус:
+            <select name="status">
+                <option value="">Все</option>
+                {% for s in status_options %}
+                    <option value="{{ s.value }}" {% if filters.status == s.value %}selected{% endif %}>
+                        {{ s.value }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Дата начала:
+            <input type="date" name="start_date" value="{{ filters.start_date or '' }}">
+        </label>
+        <label>
+            Дата окончания:
+            <input type="date" name="end_date" value="{{ filters.end_date or '' }}">
+        </label>
+        <button type="submit">Применить фильтры</button>
+        <button type="button" onclick="window.location.href='/tasks/'">Сбросить фильтры</button>
+    </form>
+
+    {% if tasks %}
+        <table class="tasks-table">
+            <thead>
+                <tr>
+                    <th>Тема</th>
+                    <th>Описание</th>
+                    <th>Автор</th>
+                    <th>Исполнитель</th>
+                    <th>Статус</th>
+                    <th>Дата создания</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.title }}</td>
+                    <td>{{ task.description or '' }}</td>
+                    <td>{{ task.creator_email }}</td>
+                    <td>{{ task.assignee_id or '-' }}</td>
+                    <td>{{ task.status.value }}</td>
+                    <td>{{ task.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Задачи отсутствуют</p>
+    {% endif %}
+</body>
+</html>

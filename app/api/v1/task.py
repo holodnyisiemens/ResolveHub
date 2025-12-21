@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.api.deps import provide_task_service
+from app.di.deps import provide_task_service
 from app.schemas.task import TaskAddDTO, TaskDTO, TaskUpdateDTO
 from app.services.task_service import TaskService
 
