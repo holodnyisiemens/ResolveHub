@@ -34,7 +34,7 @@ class Task(Base):
     )
     
     assignee_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("employees.id"), 
+        ForeignKey("employees.id", ondelete="CASCADE"), 
         nullable=True,
     )
     
