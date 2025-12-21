@@ -1,5 +1,6 @@
 from typing import Optional, Sequence
 
+from passlib.hash import bcrypt
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,7 +16,10 @@ class EmployeeRepository:
         return await self.session.get(Employee, employee_id)
 
     async def create(self, employee_data: EmployeeAddDTO) -> Employee:
-        employee = Employee(**employee_data.model_dump())
+        hashed_password = bcrypt.hash(employee_data.password)
+        employee_dict = employee_data.model_dump(exclude={"password"})
+        
+        employee = Employee(**employee_dict, hashed_password=hashed_password)
         self.session.add(employee)
         
         await self.session.flush()

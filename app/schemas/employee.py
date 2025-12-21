@@ -15,7 +15,7 @@ class BaseDTO(BaseModel):
 class EmployeeAddDTO(BaseDTO):
     username: Annotated[str, MinLen(3), MaxLen(30)]
     email: Annotated[EmailStr, MaxLen(255)]
-    password: Annotated[str, MinLen(6), MaxLen(128)]
+    password: Annotated[str, MinLen(6), MaxLen(72)]
 
 
 class EmployeeDTO(BaseDTO):
@@ -35,4 +35,4 @@ class EmployeeUpdateDTO(BaseDTO):
 
 class EmployeeChangePasswordDTO(BaseDTO):
     current_password: str
-    new_password: Annotated[str, MinLen(6), MaxLen(128)]
+    new_password: Annotated[str, MinLen(6), MaxLen(72)]
