@@ -30,9 +30,6 @@ class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
 
-    run: RunConfig = RunConfig()
-    api: ApiPrefix = ApiPrefix()
-
     @property
     def database_url_asyncpg(self) -> str:
         return (
@@ -42,12 +39,6 @@ class Settings(BaseSettings):
     
     @property
     def database_url_psycopg(self) -> str:
-        return (
-            f"postgresql+psycopg://{self.DB_USER}:{self.DB_PASSWORD.get_secret_value()}@"
-            f"{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
-        )
-    @property
-    def database_url_syncpg(self) -> str:
         return (
             f"postgresql+psycopg://{self.DB_USER}:{self.DB_PASSWORD.get_secret_value()}@"
             f"{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"

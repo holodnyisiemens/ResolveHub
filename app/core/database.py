@@ -21,7 +21,6 @@ async_session_factory = async_sessionmaker(
 )
 
 sync_engine = create_engine(
-    settings.database_url_syncpg,  # добавление синхронного URL в config
+    settings.database_url_psycopg,
     echo=False,
-    future=True
 )
