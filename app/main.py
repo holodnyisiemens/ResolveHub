@@ -11,7 +11,7 @@ from app.core.config import settings
 
 from app.routes.tasks_page import router as tasks_page_router
 
-app = FastAPI()
+app = FastAPI(title="ResolveHub")
 app.include_router(
     api_router,
     prefix=settings.api.prefix,
@@ -31,7 +31,7 @@ admin = Admin(
 admin.add_view(EmployeeAdmin)
 admin.add_view(TaskAdmin)
 
-app.include_router(tasks_page_router)
+app.include_router(tasks_page_router, include_in_schema=False)
 
 if __name__ == "__main__":
     import uvicorn
