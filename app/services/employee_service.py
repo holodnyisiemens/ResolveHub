@@ -1,5 +1,3 @@
-from typing import Sequence
-
 from fastapi import HTTPException
 
 from app.repositories.employee_repository import EmployeeRepository
@@ -86,7 +84,7 @@ class EmployeeService:
         
         return EmployeeDTO.model_validate(employee)
 
-    async def get_all(self) -> Sequence[EmployeeDTO]:
+    async def get_all(self) -> list[EmployeeDTO]:
         employee_list = await self.employee_repo.get_all()
         return [EmployeeDTO.model_validate(employee) for employee in employee_list]
     
