@@ -16,7 +16,11 @@ class Employee(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default="true")
     is_superuser: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
 
-    tasks = relationship("Task", back_populates="assignee")
+    tasks: Mapped[list["Task"]] = relationship(
+        "Task",
+        back_populates="assignee",
+        cascade="all, delete-orphan",
+    )
 
     def __str__(self) -> str:
         return f"{self.username} ({self.email})"

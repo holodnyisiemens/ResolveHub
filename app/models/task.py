@@ -6,7 +6,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from app.core.database import Base
-from app.models.employee import Employee
 
 
 class TaskStatus(PyEnum):
@@ -42,7 +41,7 @@ class Task(Base):
         nullable=False,
     )
 
-    assignee: Mapped["Employee"] = relationship(
+    assignee: Mapped[Optional["Employee"]] = relationship(
         "Employee",
         back_populates="tasks",
     )

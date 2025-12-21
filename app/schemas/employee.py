@@ -16,6 +16,8 @@ class EmployeeAddDTO(BaseDTO):
     username: Annotated[str, MinLen(3), MaxLen(30)]
     email: Annotated[EmailStr, MaxLen(255)]
     password: Annotated[str, MinLen(6), MaxLen(72)]
+    is_active: Optional[bool] = True
+    is_superuser: Optional[bool] = False
 
 
 class EmployeeDTO(BaseDTO):
