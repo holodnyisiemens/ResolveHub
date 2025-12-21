@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from fastapi import HTTPException
 
 from app.repositories.employee_repository import EmployeeRepository
@@ -58,6 +60,6 @@ class TaskService:
 
         return TaskDTO.model_validate(task)
 
-    async def get_all(self) -> list[TaskDTO]:
+    async def get_all(self) -> Sequence[TaskDTO]:
         task_list = await self.task_repo.get_all()
         return [TaskDTO.model_validate(task) for task in task_list]

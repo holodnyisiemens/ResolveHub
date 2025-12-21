@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from fastapi import HTTPException
 
 from app.repositories.employee_repository import EmployeeRepository
@@ -53,6 +55,14 @@ class EmployeeService:
                     detail=f"Email {employee_data.email} is already used by another employee",
             )
 
+        if employee_data.username is not None:
+            existing_employee = await self.employee_repo.get_by_username(employee_data.username)
+            if existing_employee and existing_employee.id != employee.id:
+                raise HTTPException(
+                    status_code=409,
+                    detail=f"User with username {employee_data.username} already exists",
+            )
+
         try:
             await self.employee_repo.update(employee, employee_data)
             await self.employee_repo.session.commit()
@@ -76,6 +86,7 @@ class EmployeeService:
         
         return EmployeeDTO.model_validate(employee)
 
-    async def get_all(self) -> list[EmployeeDTO]:
+    async def get_all(self) -> Sequence[EmployeeDTO]:
         employee_list = await self.employee_repo.get_all()
         return [EmployeeDTO.model_validate(employee) for employee in employee_list]
+    
