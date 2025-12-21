@@ -1,30 +1,27 @@
-from fastapi import FastAPI
-from sqladmin import Admin, ModelView
-from app.core.database import sync_engine
+from sqladmin import ModelView
 from app.models.employee import Employee
 from app.models.task import Task
 
-app = FastAPI()
-admin = Admin(app, engine=sync_engine, title="Admin Panel")
-
 
 class EmployeeAdmin(ModelView, model=Employee):
-    column_list = [Employee.id, Employee.username, Employee.email, Employee.is_active]
+    form_columns = [
+        Employee.username,
+        Employee.email,
+        Employee.hashed_password,
+        Employee.is_active,
+        Employee.is_superuser,
+    ]
+
+    column_list = [
+        Employee.id,
+        Employee.username,
+        Employee.email,
+        Employee.is_active,
+        Employee.is_superuser,
+    ]
 
 
 class TaskAdmin(ModelView, model=Task):
-    # что видно в списке задач
-    column_list = [
-        Task.id,
-        Task.title,
-        Task.description,
-        Task.creator_email,
-        Task.status,
-        Task.assignee,
-        Task.created_at,
-    ]
-
-    # какие поля в форме
     form_columns = [
         Task.title,
         Task.description,
@@ -34,5 +31,12 @@ class TaskAdmin(ModelView, model=Task):
         Task.created_at,
     ]
 
-admin.add_view(EmployeeAdmin)
-admin.add_view(TaskAdmin)
+    column_list = [
+        Task.id,
+        Task.title,
+        Task.description,
+        Task.creator_email,
+        Task.status,
+        Task.assignee,
+        Task.created_at,
+    ]

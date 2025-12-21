@@ -24,7 +24,8 @@ app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
 admin = Admin(
     app,
     async_engine,
-    authentication_backend=AdminAuth(secret_key=settings.SECRET_KEY)
+    title="Admin Panel",
+    authentication_backend=AdminAuth(secret_key=settings.SECRET_KEY),
 )
 
 # Регистрируем представления моделей в админке
@@ -39,7 +40,6 @@ app.include_router(
 
 # Фронтенд роутер
 app.include_router(tasks_page_router, include_in_schema=False)
-
 
 if __name__ == "__main__":
     import uvicorn
