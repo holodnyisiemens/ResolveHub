@@ -1,5 +1,6 @@
 from typing import Optional, Annotated
-from annotated_types import MaxLen, MinLen
+from annotated_types import MaxLen
+from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 
@@ -24,6 +25,7 @@ class TaskDTO(TaskAddDTO):
     id: int
     status: TaskStatus
     assignee_id: Optional[int]
+    created_at: datetime
 
 
 class TaskUpdateDTO(BaseDTO):
