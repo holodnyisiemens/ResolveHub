@@ -10,8 +10,12 @@ from app.api import router as api_router
 from app.core.config import settings
 
 from app.pages.tasks_page import router as tasks_page_router
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="ResolveHub")
+
+# Подключаем статические файлы
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Middleware для сессий и для работы AdminAuth
 app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)

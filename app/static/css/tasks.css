@@ -1,0 +1,79 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 20px;
+    background-color: #fdf6e3; /* светлый тёплый фон */
+    color: #333;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+header img {
+    height: 50px; /* логотип */
+}
+
+h1 {
+    color: #b03a2e; /* тёплый кирпичный */
+    margin: 0;
+    margin-bottom: 1%;
+}
+
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: flex-end;
+}
+
+.filter-form label {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    color: #5d4037; /* тёмно-коричневый */
+}
+
+.filter-form button {
+    padding: 5px 15px;
+    background-color: #27ae60; /* зелёный */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.filter-form button:hover {
+    background-color: #1e8449;
+}
+
+.tasks-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff8f0; /* пастельный фон таблицы */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.tasks-table th, .tasks-table td {
+    border: 1px solid #e0d4c3;
+    padding: 10px;
+    text-align: left;
+}
+
+.tasks-table th {
+    background-color: #f5cba7; /* нежно-оранжевый */
+    color: #5d4037;
+    text-transform: uppercase;
+}
+
+.tasks-table tr:nth-child(even) {
+    background-color: #fff2e6; /* полосатые ряды */
+}
+
+.tasks-table tr:hover {
+    background-color: #ffe0b2; /* подсветка при наведении */
+}
