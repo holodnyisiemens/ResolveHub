@@ -1,16 +1,14 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from sqladmin import Admin
-
-from app.core.database import async_engine
-from app.auth import AdminAuth
-from app.admin.admin import EmployeeAdmin, TaskAdmin
 from starlette.middleware.sessions import SessionMiddleware
 
+from app.admin.admin import EmployeeAdmin, TaskAdmin
 from app.api import router as api_router
+from app.auth import AdminAuth
 from app.core.config import settings
-
+from app.core.database import async_engine
 from app.pages.tasks_page import router as tasks_page_router
-from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="ResolveHub")
 

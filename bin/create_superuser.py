@@ -5,8 +5,9 @@ import sys
 
 from app.core.database import async_session_factory
 from app.repositories.employee_repository import EmployeeRepository
-from app.services.employee_service import EmployeeService
 from app.schemas.employee import EmployeeAddDTO
+from app.services.employee_service import EmployeeService
+
 
 async def create_superuser(username, password, email):
     async with async_session_factory() as session:

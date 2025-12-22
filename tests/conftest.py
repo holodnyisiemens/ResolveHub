@@ -1,11 +1,11 @@
 import pytest
-from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import (AsyncEngine, AsyncSession,
+                                    async_sessionmaker, create_async_engine)
 
 from app.core.config import settings
 from app.core.database import Base
 from app.repositories.employee_repository import EmployeeRepository
 from app.repositories.task_repository import TaskRepository
-
 
 TEST_DATABASE_URL = (
     f"postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASSWORD.get_secret_value()}@"

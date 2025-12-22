@@ -1,8 +1,10 @@
-from enum import Enum as PyEnum
-from typing import Optional, TYPE_CHECKING
 from datetime import datetime
+from enum import Enum as PyEnum
+from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Enum as SQLEnum, ForeignKey, DateTime, String
+from sqlalchemy import DateTime
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 

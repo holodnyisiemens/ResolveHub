@@ -1,9 +1,8 @@
 import pytest
 
 from app.models.task import Task
-from app.schemas.task import TaskAddDTO, TaskUpdateDTO
 from app.repositories.task_repository import TaskRepository
-
+from app.schemas.task import TaskAddDTO, TaskUpdateDTO
 
 task_data_1 = TaskAddDTO(
     title="Fix backend bug",

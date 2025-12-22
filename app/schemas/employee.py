@@ -1,6 +1,6 @@
 from typing import Annotated, Optional
-from annotated_types import MaxLen, MinLen
 
+from annotated_types import MaxLen, MinLen
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 

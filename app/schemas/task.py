@@ -1,7 +1,7 @@
-from typing import Optional, Annotated
-from annotated_types import MaxLen
 from datetime import datetime
+from typing import Annotated, Optional
 
+from annotated_types import MaxLen
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 from app.models.task import TaskStatus

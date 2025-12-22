@@ -1,6 +1,6 @@
+from datetime import date, datetime
 from typing import Optional
 
-from datetime import date, datetime
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 

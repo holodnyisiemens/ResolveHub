@@ -3,9 +3,9 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import get_password_hash
 from app.models.employee import Employee
 from app.schemas.employee import EmployeeAddDTO, EmployeeUpdateDTO
-from app.core.security import get_password_hash
 
 
 class EmployeeRepository:

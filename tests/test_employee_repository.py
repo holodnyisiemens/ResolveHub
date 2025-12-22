@@ -1,9 +1,8 @@
 import pytest
 
 from app.models.employee import Employee
-from app.schemas.employee import EmployeeAddDTO, EmployeeUpdateDTO
 from app.repositories.employee_repository import EmployeeRepository
-
+from app.schemas.employee import EmployeeAddDTO, EmployeeUpdateDTO
 
 employee_data_1 = EmployeeAddDTO(
     username="alexey",

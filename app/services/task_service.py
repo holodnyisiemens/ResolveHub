@@ -2,10 +2,10 @@ from typing import Optional
 
 from fastapi import HTTPException
 
+from app.models.task import TaskStatus
 from app.repositories.employee_repository import EmployeeRepository
 from app.repositories.task_repository import TaskRepository
 from app.schemas.task import TaskAddDTO, TaskDTO, TaskUpdateDTO
-from app.models.task import TaskStatus
 
 
 class TaskService:

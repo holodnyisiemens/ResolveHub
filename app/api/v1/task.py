@@ -4,7 +4,6 @@ from app.di.deps import provide_task_service
 from app.schemas.task import TaskAddDTO, TaskDTO, TaskUpdateDTO
 from app.services.task_service import TaskService
 
-
 router = APIRouter(tags=["Tasks"])
 
 
