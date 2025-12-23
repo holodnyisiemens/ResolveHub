@@ -1,4 +1,3 @@
-from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request

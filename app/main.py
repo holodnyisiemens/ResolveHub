@@ -5,7 +5,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.admin.admin import EmployeeAdmin, TaskAdmin
 from app.api import router as api_router
-from app.auth import AdminAuth
+from app.core.auth import AdminAuth
 from app.core.config import settings
 from app.core.database import async_engine
 from app.pages.tasks_page import router as tasks_page_router
