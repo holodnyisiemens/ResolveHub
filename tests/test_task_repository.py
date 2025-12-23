@@ -18,7 +18,9 @@ task_data_2 = TaskAddDTO(
 
 
 class TestTaskRepository:
-    async def _create_test_task(self, task_repository: TaskRepository, task_data: TaskAddDTO) -> Task:
+    async def _create_test_task(
+        self, task_repository: TaskRepository, task_data: TaskAddDTO
+    ) -> Task:
         return await task_repository.create(task_data)
 
     @pytest.mark.asyncio
