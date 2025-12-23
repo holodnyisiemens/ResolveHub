@@ -4,7 +4,6 @@ from app.di.deps import provide_employee_service
 from app.schemas.employee import EmployeeAddDTO, EmployeeDTO, EmployeeUpdateDTO
 from app.services.employee_service import EmployeeService
 
-
 router = APIRouter(tags=["Employees"])
 
 
@@ -19,7 +18,7 @@ async def get_all_employees(
 @router.get("/{employee_id:int}", response_model=EmployeeDTO)
 async def get_employee_by_id(
     employee_id: int,
-    employee_service: EmployeeService = Depends(provide_employee_service), 
+    employee_service: EmployeeService = Depends(provide_employee_service),
 ):
     """Получить сотрудника по id"""
     return await employee_service.get_by_id(employee_id)

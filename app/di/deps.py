@@ -15,11 +15,13 @@ async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_factory() as session:
         yield session
 
+
 async def provide_employee_repository(
     db_session: AsyncSession = Depends(provide_db_session),
 ) -> EmployeeRepository:
     """Провайдер репозитория сотрудников"""
     return EmployeeRepository(db_session)
+
 
 async def provide_employee_service(
     employee_repository: EmployeeRepository = Depends(provide_employee_repository),
@@ -27,11 +29,13 @@ async def provide_employee_service(
     """Провайдер сервиса сотрудников"""
     return EmployeeService(employee_repository)
 
+
 async def provide_task_repository(
     db_session: AsyncSession = Depends(provide_db_session),
 ) -> TaskRepository:
     """Провайдер репозитория задач"""
     return TaskRepository(db_session)
+
 
 async def provide_task_service(
     task_repository: TaskRepository = Depends(provide_task_repository),

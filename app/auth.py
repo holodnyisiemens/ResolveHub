@@ -1,16 +1,18 @@
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from fastapi import Depends, HTTPException, status
-from app.repositories.employee_repository import EmployeeRepository
+
 from app.core.database import async_session_factory
 from app.core.security import verify_password
+from app.repositories.employee_repository import EmployeeRepository
 
 security = HTTPBasic()
 
+
 class AdminAuth(AuthenticationBackend):
     middlewares = []
-    
+
     def __init__(self, secret_key: str):
         self.secret_key = secret_key
 

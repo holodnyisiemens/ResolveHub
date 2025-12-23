@@ -1,8 +1,10 @@
-from enum import Enum as PyEnum
-from typing import Optional, TYPE_CHECKING
 from datetime import datetime
+from enum import Enum as PyEnum
+from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Enum as SQLEnum, ForeignKey, DateTime, String
+from sqlalchemy import DateTime
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -10,6 +12,7 @@ from app.core.database import Base
 
 if TYPE_CHECKING:
     from app.models.employee import Employee
+
 
 class TaskStatus(PyEnum):
     NEW = "NEW"
@@ -21,7 +24,7 @@ class Task(Base):
     __tablename__ = "tasks"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    
+
     title: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     description: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
     creator_email: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -32,12 +35,12 @@ class Task(Base):
         default=TaskStatus.NEW,
         server_default=TaskStatus.NEW.value,
     )
-    
+
     assignee_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("employees.id", ondelete="CASCADE"), 
+        ForeignKey("employees.id", ondelete="CASCADE"),
         nullable=True,
     )
-    
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=datetime.now,

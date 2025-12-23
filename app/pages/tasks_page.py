@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Request, Depends, Query
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
-from typing import Optional
 from datetime import date
+from typing import Optional
 
-from app.services.task_service import TaskService
-from app.models.task import TaskStatus
+from fastapi import APIRouter, Depends, Query, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+
 from app.di.deps import provide_task_service
+from app.models.task import TaskStatus
+from app.services.task_service import TaskService
 
 router = APIRouter(prefix="/tasks")
 templates = Jinja2Templates(directory="app/templates")
@@ -18,7 +19,7 @@ async def tasks_page(
     status: Optional[str] = Query(None, description="Статус задачи"),
     start_date: Optional[str] = Query(None, description="Дата начала (YYYY-MM-DD)"),
     end_date: Optional[str] = Query(None, description="Дата окончания (YYYY-MM-DD)"),
-    task_service: TaskService = Depends(provide_task_service)
+    task_service: TaskService = Depends(provide_task_service),
 ):
     # Конвертируем статус в Enum, если указан
     task_status = TaskStatus(status) if status else None
@@ -41,6 +42,6 @@ async def tasks_page(
             "start_date": start_date or "",
             "end_date": end_date or "",
         },
-        "status_options": list(TaskStatus)
+        "status_options": list(TaskStatus),
     }
     return templates.TemplateResponse("tasks.html", context)
