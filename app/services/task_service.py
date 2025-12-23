@@ -77,3 +77,30 @@ class TaskService:
             end_date=end_date
         )
         return [TaskDTO.model_validate(t) for t in tasks]
+
+    async def assign_task(self, task_id: int, assignee_id: Optional[int]) -> TaskDTO:
+        # 1. находим задачу
+        task = await self.task_repo.get_by_id(task_id)
+        if not task:
+            raise HTTPException(status_code=404, detail=f"Task with ID {task_id} not found")
+
+        # 2. если указан исполнитель — проверяем, что он существует
+        if assignee_id is not None:
+            assignee = await self.employee_repo.get_by_id(assignee_id)
+            if not assignee:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Employee with ID {assignee_id} does not exist",
+                )
+
+        # 3. обновляем исполнителя
+        try:
+            task.assignee_id = assignee_id
+            await self.task_repo.session.commit()
+        except:
+            await self.task_repo.session.rollback()
+            raise HTTPException(status_code=400, detail="Task assign error")
+
+        return TaskDTO.model_validate(task)
+    
+

@@ -47,7 +47,11 @@
             <tbody>
                 {% for task in tasks %}
                 <tr>
-                    <td>{{ task.title }}</td>
+                    <td>
+                        <a href="/tasks/{{ task.id }}/">
+                            {{ task.title }}
+                        </a>
+                    </td>
                     <td>{{ task.description or '' }}</td>
                     <td>{{ task.creator_email }}</td>
                     <td>{{ task.assignee_id or '-' }}</td>
