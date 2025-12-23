@@ -41,6 +41,7 @@ app.include_router(tasks_page_router, include_in_schema=False)
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(
         app="app.main:app",
         host=settings.run.host,

@@ -1,6 +1,10 @@
 import pytest
-from sqlalchemy.ext.asyncio import (AsyncEngine, AsyncSession,
-                                    async_sessionmaker, create_async_engine)
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 from app.core.config import settings
 from app.core.database import Base
@@ -12,6 +16,7 @@ TEST_DATABASE_URL = (
     f"{settings.DB_HOST}:{settings.DB_PORT}/test_resolvehub"
 )
 
+
 @pytest.fixture()
 async def engine():
     engine = create_async_engine(TEST_DATABASE_URL)
@@ -19,6 +24,7 @@ async def engine():
         yield engine
     finally:
         await engine.dispose()
+
 
 @pytest.fixture()
 async def tables(engine: AsyncEngine):
@@ -29,15 +35,20 @@ async def tables(engine: AsyncEngine):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
+
 @pytest.fixture
 async def session(engine, tables):
-    async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    async_session = async_sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
     async with async_session() as session:
         yield session
+
 
 @pytest.fixture
 async def employee_repository(session) -> EmployeeRepository:
     return EmployeeRepository(session)
+
 
 @pytest.fixture
 async def task_repository(session) -> TaskRepository:

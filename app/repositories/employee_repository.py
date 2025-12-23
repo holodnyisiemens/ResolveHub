@@ -18,10 +18,10 @@ class EmployeeRepository:
     async def create(self, employee_data: EmployeeAddDTO) -> Employee:
         hashed_password = get_password_hash(employee_data.password)
         employee_dict = employee_data.model_dump(exclude={"password"})
-        
+
         employee = Employee(**employee_dict, hashed_password=hashed_password)
         self.session.add(employee)
-        
+
         await self.session.flush()
         await self.session.refresh(employee)
 
@@ -31,7 +31,9 @@ class EmployeeRepository:
         await self.session.delete(employee)
         await self.session.flush()
 
-    async def update(self, employee: Employee, employee_data: EmployeeUpdateDTO) -> Employee:
+    async def update(
+        self, employee: Employee, employee_data: EmployeeUpdateDTO
+    ) -> Employee:
         update_data = employee_data.model_dump(exclude_unset=True)
         for field, value in update_data.items():
             setattr(employee, field, value)

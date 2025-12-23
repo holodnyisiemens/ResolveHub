@@ -9,9 +9,10 @@ from app.repositories.employee_repository import EmployeeRepository
 
 security = HTTPBasic()
 
+
 class AdminAuth(AuthenticationBackend):
     middlewares = []
-    
+
     def __init__(self, secret_key: str):
         self.secret_key = secret_key
 

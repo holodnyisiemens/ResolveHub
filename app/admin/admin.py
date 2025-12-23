@@ -1,12 +1,8 @@
-from typing import Any
-
-from fastapi import Request
 from sqladmin import ModelView
 
 from app.core.security import get_password_hash
 from app.models.employee import Employee
 from app.models.task import Task
-
 
 
 class EmployeeAdmin(ModelView, model=Employee):
