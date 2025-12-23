@@ -1,15 +1,15 @@
 from datetime import date
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query, Request, Form
+from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from app.di.deps import provide_task_service, provide_employee_service
+from app.di.deps import provide_employee_service, provide_task_service
 from app.models.task import TaskStatus
-from app.services.task_service import TaskService
-from app.services.employee_service import EmployeeService
 from app.schemas.task import TaskUpdateDTO
+from app.services.employee_service import EmployeeService
+from app.services.task_service import TaskService
 
 router = APIRouter(prefix="/tasks")
 templates = Jinja2Templates(directory="app/templates")

@@ -18,34 +18,38 @@
         <div><strong>ID:</strong> {{ task.id }}</div>
         <div><strong>Автор:</strong> {{ task.creator_email }}</div>
         <div><strong>Создана:</strong> {{ task.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
-    </div>
 
-    <!-- Форма выше описания: статус + исполнитель -->
-    <form method="post" class="assign-form">
-        <label for="status">Статус:</label>
-        <select name="status" id="status">
-            {% for s in status_options %}
-                <option value="{{ s.value }}" {% if task.status.value == s.value %}selected{% endif %}>
-                    {{ s.value }}
-                </option>
-            {% endfor %}
-        </select>
+    
+        <form method="post" class="assign-form">
+            <div>
+            <label for="status">Статус:</label>
+            <select name="status" id="status">
+                {% for s in status_options %}
+                    <option value="{{ s.value }}" {% if task.status.value == s.value %}selected{% endif %}>
+                        {{ s.value }}
+                    </option>
+                {% endfor %}
+            </select>
+            </div>
 
-        <label for="assignee_id">Назначить исполнителя:</label>
-        <select name="assignee_id" id="assignee_id">
-            <option value="">— не назначен —</option>
-            {% for emp in employees %}
-                <option value="{{ emp.id }}" {% if task.assignee_id == emp.id %}selected{% endif %}>
-                    {{ emp.username }} ({{ emp.email }})
-                </option>
-            {% endfor %}
-        </select>
+            <div>
+            <label for="assignee_id">Исполнитель:</label>
+            <select name="assignee_id" id="assignee_id">
+                <option value="">— не назначен —</option>
+                {% for emp in employees %}
+                    <option value="{{ emp.id }}" {% if task.assignee_id == emp.id %}selected{% endif %}>
+                        {{ emp.username }} ({{ emp.email }})
+                    </option>
+                {% endfor %}
+            </select>
+            </div>
+            <button type="submit">Сохранить</button>
+        </form>
 
-        <button type="submit">Сохранить</button>
-    </form>
 
-    <div class="task-description">
-        {{ task.description or 'Описание отсутствует' }}
+        <div class="task-description">
+{{ task.description or 'Описание отсутствует' }}
+        </div>
     </div>
 </div>
 

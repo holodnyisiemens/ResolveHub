@@ -89,7 +89,9 @@ class TaskService:
         # находим задачу
         task = await self.task_repo.get_by_id(task_id)
         if not task:
-            raise HTTPException(status_code=404, detail=f"Task with ID {task_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Task with ID {task_id} not found"
+            )
 
         # если указан исполнитель — проверяем, что он существует
         if assignee_id is not None:
