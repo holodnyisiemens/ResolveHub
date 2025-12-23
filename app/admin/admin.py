@@ -1,4 +1,8 @@
+from typing import Any
+
+from fastapi import Request
 from sqladmin import ModelView
+from wtforms import PasswordField
 
 from app.core.security import get_password_hash
 from app.models.employee import Employee
@@ -22,24 +26,33 @@ class EmployeeAdmin(ModelView, model=Employee):
         Employee.is_superuser,
     ]
 
+    # Переопределяем виджет для скрытия пароля
+    form_overrides = {
+        "hashed_password": PasswordField,
+    }
+
     column_labels = {
         Employee.hashed_password: "Password",
     }
 
-    async def create_model(self, request, data):
-        plain_password = data.get("hashed_password")
-        if not plain_password:
-            raise ValueError("Password is required for new employee")
-        data["hashed_password"] = get_password_hash(plain_password)
-        return await super().create_model(request, data)
+    async def on_model_change(
+        self,
+        data: dict[str, Any],
+        model: Employee,
+        is_created: bool,
+        request: Request,
+    ) -> None:
+        password = data.get("hashed_password")
 
-    async def update_model(self, request, pk, data):
-        plain_password = data.get("hashed_password")
-        if plain_password:
-            data["hashed_password"] = get_password_hash(plain_password)
-        else:
-            data.pop("hashed_password", None)
-        return await super().update_model(request, pk, data)
+        # Пароль обязателен при создании
+        if is_created and not password:
+            raise ValueError("Password is required")
+
+        # Если пароль введён — хэшируем
+        if password:
+            data["hashed_password"] = get_password_hash(password)
+
+        await super().on_model_change(data, model, is_created, request)
 
 
 class TaskAdmin(ModelView, model=Task):
