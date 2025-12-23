@@ -1,9 +1,8 @@
 import pytest
 
 from app.models.task import Task
-from app.schemas.task import TaskAddDTO, TaskUpdateDTO
 from app.repositories.task_repository import TaskRepository
-
+from app.schemas.task import TaskAddDTO, TaskUpdateDTO
 
 task_data_1 = TaskAddDTO(
     title="Fix backend bug",
@@ -19,7 +18,9 @@ task_data_2 = TaskAddDTO(
 
 
 class TestTaskRepository:
-    async def _create_test_task(self, task_repository: TaskRepository, task_data: TaskAddDTO) -> Task:
+    async def _create_test_task(
+        self, task_repository: TaskRepository, task_data: TaskAddDTO
+    ) -> Task:
         return await task_repository.create(task_data)
 
     @pytest.mark.asyncio

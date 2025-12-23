@@ -4,7 +4,6 @@ from app.di.deps import provide_task_service
 from app.schemas.task import TaskAddDTO, TaskDTO, TaskUpdateDTO
 from app.services.task_service import TaskService
 
-
 router = APIRouter(tags=["Tasks"])
 
 
@@ -15,6 +14,7 @@ async def get_all_tasks(
     """Получить все задачи"""
     return await task_service.get_all()
 
+
 @router.get("/{task_id:int}", response_model=TaskDTO)
 async def get_task_by_id(
     task_id: int,
@@ -22,6 +22,7 @@ async def get_task_by_id(
 ):
     """Получить задачу по id"""
     return await task_service.get_by_id(task_id)
+
 
 @router.post("/", response_model=TaskDTO)
 async def create_task(
@@ -31,6 +32,7 @@ async def create_task(
     """Создать задачу"""
     return await task_service.create(task_data)
 
+
 @router.delete("/{task_id:int}")
 async def delete_task(
     task_id: int,
@@ -38,6 +40,7 @@ async def delete_task(
 ):
     """Удалить задачу"""
     await task_service.delete(task_id)
+
 
 @router.put("/{task_id:int}", response_model=TaskDTO)
 async def update_task(

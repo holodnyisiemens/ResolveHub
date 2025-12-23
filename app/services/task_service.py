@@ -2,10 +2,10 @@ from typing import Optional
 
 from fastapi import HTTPException
 
+from app.models.task import TaskStatus
 from app.repositories.employee_repository import EmployeeRepository
 from app.repositories.task_repository import TaskRepository
 from app.schemas.task import TaskAddDTO, TaskDTO, TaskUpdateDTO
-from app.models.task import TaskStatus
 
 
 class TaskService:
@@ -16,8 +16,10 @@ class TaskService:
     async def get_by_id(self, task_id: int) -> TaskDTO:
         task = await self.task_repo.get_by_id(task_id)
         if not task:
-            raise HTTPException(status_code=404, detail=f"Task with ID {task_id} not found")
-        
+            raise HTTPException(
+                status_code=404, detail=f"Task with ID {task_id} not found"
+            )
+
         return TaskDTO.model_validate(task)
 
     async def create(self, task_data: TaskAddDTO) -> TaskDTO:
@@ -33,7 +35,9 @@ class TaskService:
     async def delete(self, task_id: int) -> None:
         task = await self.task_repo.get_by_id(task_id)
         if not task:
-            raise HTTPException(status_code=404, detail=f"Task with ID {task_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Task with ID {task_id} not found"
+            )
 
         try:
             await self.task_repo.delete(task)
@@ -45,35 +49,38 @@ class TaskService:
     async def update(self, task_id: int, task_data: TaskUpdateDTO) -> TaskDTO:
         task = await self.task_repo.get_by_id(task_id)
         if not task:
-            raise HTTPException(status_code=404, detail=f"Task with ID {task_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Task with ID {task_id} not found"
+            )
 
         if task_data.assignee_id is not None:
             assignee = await self.employee_repo.get_by_id(task_data.assignee_id)
             if not assignee:
-                raise HTTPException(status_code=404, detail=f"Employee with ID {task_data.assignee_id} does not exist")
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Employee with ID {task_data.assignee_id} does not exist",
+                )
 
         try:
             await self.task_repo.update(task, task_data)
             await self.task_repo.session.commit()
         except:
             await self.task_repo.session.rollback()
-            raise HTTPException(status_code=400, detail=f"Task update error")    
+            raise HTTPException(status_code=400, detail=f"Task update error")
 
         return TaskDTO.model_validate(task)
 
     async def get_all(self) -> list[TaskDTO]:
         task_list = await self.task_repo.get_all()
         return [TaskDTO.model_validate(task) for task in task_list]
-    
+
     async def get_filtered_tasks(
         self,
         status_filter: Optional[TaskStatus] = None,
         start_date: Optional[str] = None,
-        end_date: Optional[str] = None
+        end_date: Optional[str] = None,
     ) -> list[TaskDTO]:
         tasks = await self.task_repo.get_filtered_tasks(
-            status_filter=status_filter,
-            start_date=start_date,
-            end_date=end_date
+            status_filter=status_filter, start_date=start_date, end_date=end_date
         )
         return [TaskDTO.model_validate(t) for t in tasks]
