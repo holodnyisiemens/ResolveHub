@@ -13,6 +13,7 @@ from app.core.database import Base
 if TYPE_CHECKING:
     from app.models.employee import Employee
 
+
 class TaskStatus(PyEnum):
     NEW = "NEW"
     IN_PROGRESS = "IN_PROGRESS"
@@ -23,7 +24,7 @@ class Task(Base):
     __tablename__ = "tasks"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    
+
     title: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     description: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
     creator_email: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -34,12 +35,12 @@ class Task(Base):
         default=TaskStatus.NEW,
         server_default=TaskStatus.NEW.value,
     )
-    
+
     assignee_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("employees.id", ondelete="CASCADE"), 
+        ForeignKey("employees.id", ondelete="CASCADE"),
         nullable=True,
     )
-    
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=datetime.now,

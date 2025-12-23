@@ -4,48 +4,7 @@
     <meta charset="UTF-8">
     <title>ResolveHub – задача {{ task.id }}</title>
     <link rel="stylesheet" href="/static/css/tasks.css">
-    <style>
-        .task-card {
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: #fff8f0;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .task-card h2 {
-            margin-top: 0;
-            color: #b03a2e;
-        }
-        .task-meta {
-            font-size: 0.9rem;
-            color: #5d4037;
-            margin-bottom: 10px;
-        }
-        .task-description {
-            white-space: pre-wrap;
-            margin-bottom: 20px;
-        }
-        .assign-form {
-            margin-top: 20px;
-        }
-        .assign-form label {
-            font-weight: bold;
-            color: #5d4037;
-        }
-        .assign-form select, .assign-form button {
-            margin-top: 5px;
-        }
-        .back-link {
-            display: inline-block;
-            margin: 10px 0;
-            color: #b03a2e;
-            text-decoration: none;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/css/task_detail.css">
 </head>
 <body>
 <h1>ResolveHub</h1>
@@ -58,17 +17,20 @@
     <div class="task-meta">
         <div><strong>ID:</strong> {{ task.id }}</div>
         <div><strong>Автор:</strong> {{ task.creator_email }}</div>
-        <div><strong>Исполнитель:</strong> {{ task.assignee_id or '-' }}</div>
-        <div><strong>Статус:</strong> {{ task.status.value }}</div>
         <div><strong>Создана:</strong> {{ task.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
     </div>
 
-    <div class="task-description">
-        {{ task.description or 'Описание отсутствует' }}
-    </div>
-
-    <!-- Форма назначения исполнителя -->
+    <!-- Форма выше описания: статус + исполнитель -->
     <form method="post" class="assign-form">
+        <label for="status">Статус:</label>
+        <select name="status" id="status">
+            {% for s in status_options %}
+                <option value="{{ s.value }}" {% if task.status.value == s.value %}selected{% endif %}>
+                    {{ s.value }}
+                </option>
+            {% endfor %}
+        </select>
+
         <label for="assignee_id">Назначить исполнителя:</label>
         <select name="assignee_id" id="assignee_id">
             <option value="">— не назначен —</option>
@@ -78,8 +40,13 @@
                 </option>
             {% endfor %}
         </select>
+
         <button type="submit">Сохранить</button>
     </form>
+
+    <div class="task-description">
+        {{ task.description or 'Описание отсутствует' }}
+    </div>
 </div>
 
 </body>
