@@ -1,0 +1,36 @@
+services:
+  resolvehub-db:
+    container_name: resolvehub-db
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    env_file:
+      - .env
+    volumes:
+      - resolvehub_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $DB_USER -d $DB_NAME"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  resolvehub:
+    container_name: resolvehub
+    build: .
+    image: resolvehub:latest
+    pull_policy: never
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    depends_on:
+      resolvehub-db:
+        condition: service_healthy
+
+volumes:
+  resolvehub_data:
+    name: "resolvehub_data"
