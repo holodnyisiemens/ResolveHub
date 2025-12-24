@@ -19,7 +19,14 @@ class ApiPrefix(BaseModel):
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(
+        env_file=[
+            ".env",
+            ".env.local",
+        ],
+        extra="ignore",
+    )
+
     DB_HOST: str
     DB_PORT: int
     DB_USER: str
