@@ -4,13 +4,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
 
-from config import settings
+from app.core.config import settings
 
-TEMPLATES_DIR = Path(__file__).parent / "templates"
+TEMPLATES_DIR = Path("app") / "templates" / "email"
 
-
-def send_autoreply_task_created(to_email: str, subject: str, body: str) -> None:
-    """Отправляет автоответ пользователю после создания задачи"""
+def send_autoreply(template_file: str, to_email: str, subject: str, body: str):
+    """Отправляет автоответ пользователю"""
     if not all(
         [
             settings.SMTP_HOST,
@@ -22,7 +21,7 @@ def send_autoreply_task_created(to_email: str, subject: str, body: str) -> None:
         print("SMTP настройки отсутствуют, автоответ пропущен", flush=True)
         return
 
-    template_path = TEMPLATES_DIR / "task_created.txt"
+    template_path = TEMPLATES_DIR / template_file
     template = template_path.read_text(encoding="utf-8")
 
     body_preview = body[:300] + ("..." if len(body) > 300 else "")
@@ -61,3 +60,9 @@ def send_autoreply_task_created(to_email: str, subject: str, body: str) -> None:
 
     except Exception as e:
         print(f"Ошибка отправки автоответа {to_email}: {e}", flush=True)
+
+def send_autoreply_task_created(to_email: str, subject: str, body: str) -> None:
+    send_autoreply("task_created.txt", to_email, subject, body)
+
+def send_autoreply_task_done(to_email: str, subject: str, body: str) -> None:
+    send_autoreply("task_done.txt", to_email, subject, body)

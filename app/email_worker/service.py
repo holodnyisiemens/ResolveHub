@@ -6,8 +6,9 @@ from email.utils import parseaddr
 
 import requests
 from bs4 import BeautifulSoup
-from config import settings
-from sender import send_autoreply_task_created
+
+from app.core.config import settings
+from app.email_worker.sender import send_autoreply_task_created
 
 
 def fetch_unseen_messages(mail):

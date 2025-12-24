@@ -10,6 +10,7 @@ from app.models.task import TaskStatus
 from app.schemas.task import TaskUpdateDTO
 from app.services.employee_service import EmployeeService
 from app.services.task_service import TaskService
+from app.email_worker.sender import send_autoreply_task_done
 
 router = APIRouter(prefix="/tasks")
 templates = Jinja2Templates(directory="app/templates")
@@ -95,7 +96,15 @@ async def update_task_page(
         status=TaskStatus(status),
         assignee_id=assignee_id,
     )
-    await task_service.update(task_id=task_id, task_data=update_data)
+    updated_task = await task_service.update(task_id=task_id, task_data=update_data)
+
+    if updated_task.status == TaskStatus.DONE:
+        send_autoreply_task_done(
+            to_email=updated_task.creator_email,
+            subject=updated_task.title,
+            body=updated_task.description,
+        )
+        print(f"Task from {updated_task.creator_email} was closed")
 
     return RedirectResponse(
         url=f"/tasks/{task_id}/",
