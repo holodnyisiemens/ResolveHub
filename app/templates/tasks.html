@@ -52,7 +52,7 @@
                             {{ task.title or 'Без темы' }}
                         </a>
                     </td>
-                    <td>{{ task.description or '' }}</td>
+                    <td>{{ (task.description or '')[:50] ~ ('...' if task.description and task.description|length > 50 else '') }}</td>
                     <td>{{ task.creator_email }}</td>
                     <td>
                         {% if task.assignee_id %}
