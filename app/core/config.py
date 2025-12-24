@@ -1,4 +1,4 @@
-from pydantic import BaseModel, SecretStr
+from pydantic import BaseModel, SecretStr, EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -33,6 +33,17 @@ class Settings(BaseSettings):
     DB_PASSWORD: SecretStr
     DB_NAME: str
     SECRET_KEY: str
+
+    SMTP_HOST: str
+    SMTP_PORT: int
+    SMTP_USER: EmailStr
+    SMTP_PASSWORD: SecretStr
+    IMAP_HOST: str
+    IMAP_PORT: str
+    IMAP_USER: EmailStr
+    IMAP_PASSWORD: SecretStr
+    EMAIL_FOR_TESTS: EmailStr
+    API_URL: str
 
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
