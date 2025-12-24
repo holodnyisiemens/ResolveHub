@@ -13,7 +13,7 @@ from app.services.task_service import TaskService
 from app.email_worker.sender import send_autoreply_task_done
 
 router = APIRouter(prefix="/tasks")
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="app/templates/html")
 
 
 @router.get("/", response_class=HTMLResponse)
