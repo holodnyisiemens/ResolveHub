@@ -78,9 +78,18 @@ async def update_task_page(
     request: Request,
     task_id: int,
     status: str = Form(...),
-    assignee_id: Optional[int] = Form(None),
+    assignee_id: str = Form(None),
     task_service: TaskService = Depends(provide_task_service),
 ):
+    # Если исполнитель остается/становится неназначеным преобразуем пустую строку в None
+    if assignee_id == "":
+        assignee_id = None
+    else:
+        try:
+            assignee_id = int(assignee_id)
+        except Exception as e:
+            print(e)
+
     update_data = TaskUpdateDTO(
         status=TaskStatus(status),
         assignee_id=assignee_id,
