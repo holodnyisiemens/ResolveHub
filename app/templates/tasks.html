@@ -49,7 +49,7 @@
                 <tr>
                     <td>
                         <a href="/tasks/{{ task.id }}/">
-                            {{ task.title }}
+                            {{ task.title or 'Без темы' }}
                         </a>
                     </td>
                     <td>{{ task.description or '' }}</td>
