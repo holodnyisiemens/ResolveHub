@@ -1,4 +1,4 @@
-from pydantic import BaseModel, SecretStr, EmailStr
+from pydantic import BaseModel, EmailStr, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 

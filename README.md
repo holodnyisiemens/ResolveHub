@@ -72,12 +72,12 @@ docker exec resolvehub python -m app.bin.create_superuser admin 123456 example@g
 
 Тестирование отправки email по адресу, указанному в .env как EMAIL_FOR_TESTS:
 ```
-docker exec resolvehub-email-worker python -um bin.send_test_email
+docker exec resolvehub python -um app.bin.send_test_email
 ```
 
 Тестирование приема email (если основное приложение уже запущено принятые письма будут добавляться в список задач):
 ```
-docker exec resolvehub-email-worker python -um bin.email_process_test_worker
+docker exec resolvehub python -um app.bin.email_process_test_worker
 ```
 
 Запуск всех тестов pytest (из корневой директории):

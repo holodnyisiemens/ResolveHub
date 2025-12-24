@@ -8,6 +8,7 @@ from app.core.config import settings
 
 TEMPLATES_DIR = Path("app") / "templates" / "email"
 
+
 def send_autoreply(template_file: str, to_email: str, subject: str, body: str):
     """Отправляет автоответ пользователю"""
     if not all(
@@ -61,8 +62,10 @@ def send_autoreply(template_file: str, to_email: str, subject: str, body: str):
     except Exception as e:
         print(f"Ошибка отправки автоответа {to_email}: {e}", flush=True)
 
+
 def send_autoreply_task_created(to_email: str, subject: str, body: str) -> None:
     send_autoreply("task_created.txt", to_email, subject, body)
+
 
 def send_autoreply_task_done(to_email: str, subject: str, body: str) -> None:
     send_autoreply("task_done.txt", to_email, subject, body)
