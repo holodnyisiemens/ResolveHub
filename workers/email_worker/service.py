@@ -8,6 +8,8 @@ import requests
 from bs4 import BeautifulSoup
 from config import settings
 
+from sender import send_autoreply_task_created
+
 
 def fetch_unseen_messages(mail):
     """Получаем список непрочитанных писем"""
@@ -66,10 +68,10 @@ def parse_message(msg_bytes):
     return sender_email, subject, body
 
 
-def send_task_to_api(sender, subject, body):
+def send_task_to_api(sender, subject, body) -> bool:
     """Отправляем задачу через HTTP API"""
     try:
-        requests.post(
+        response = requests.post(
             f"{settings.API_URL}/tasks",
             json={
                 "title": subject,
@@ -78,12 +80,16 @@ def send_task_to_api(sender, subject, body):
             },
             timeout=10,
         )
+        response.raise_for_status()
+        return True
+
     except requests.RequestException as e:
         print(f"Failed to send task: {e}")
+        return False
 
 
 def connect_imap():
-    mail = imaplib.IMAP4_SSL(settings.IMAP_HOST, settings.IMAP_PORT)
+    mail = imaplib.IMAP4_SSL(settings.IMAP_HOST, settings.IMAP_PORT, timeout=10)
     mail.login(settings.IMAP_USER, settings.IMAP_PASSWORD.get_secret_value())
     print("IMAP worker started and connected")
     return mail
@@ -101,7 +107,14 @@ def process_mails():
                 print(f"\nNew email from: {sender}")
                 print(f"Subject: {subject}")
 
-                send_task_to_api(sender, subject, body)
+                created = send_task_to_api(sender, subject, body)
+                if created:
+                    # Отправка автоответа
+                    send_autoreply_task_created(
+                        to_email=sender,
+                        subject=subject,
+                        body=body,
+                    )
 
                 # Пометка письма как прочитанного
                 mail.store(msg_id, "+FLAGS", "\\Seen")
