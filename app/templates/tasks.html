@@ -54,7 +54,20 @@
                     </td>
                     <td>{{ task.description or '' }}</td>
                     <td>{{ task.creator_email }}</td>
-                    <td>{{ task.assignee_id or '-' }}</td>
+                    <td>
+                        {% if task.assignee_id %}
+                            {% set assignee = employees
+                                | selectattr("id", "equalto", task.assignee_id)
+                                | first %}
+                            {% if assignee %}
+                                {{ assignee.username }} ({{ assignee.email }})
+                            {% else %}
+                                -
+                            {% endif %}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
                     <td>{{ task.status.value }}</td>
                     <td>{{ task.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
                 </tr>

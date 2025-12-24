@@ -22,6 +22,7 @@ async def tasks_page(
     start_date: Optional[str] = Query(None, description="Дата начала (YYYY-MM-DD)"),
     end_date: Optional[str] = Query(None, description="Дата окончания (YYYY-MM-DD)"),
     task_service: TaskService = Depends(provide_task_service),
+    employee_service: EmployeeService = Depends(provide_employee_service),
 ):
     task_status = TaskStatus(status) if status else None
 
@@ -34,9 +35,12 @@ async def tasks_page(
         end_date=end_dt,
     )
 
+    employees = await employee_service.get_all()
+
     context = {
         "request": request,
         "tasks": tasks,
+        "employees": employees,
         "filters": {
             "status": status or "",
             "start_date": start_date or "",
@@ -45,7 +49,6 @@ async def tasks_page(
         "status_options": list(TaskStatus),
     }
     return templates.TemplateResponse("tasks.html", context)
-
 
 @router.get("/{task_id}/", response_class=HTMLResponse)
 async def task_detail_page(
