@@ -50,6 +50,7 @@ async def tasks_page(
     }
     return templates.TemplateResponse("tasks.html", context)
 
+
 @router.get("/{task_id}/", response_class=HTMLResponse)
 async def task_detail_page(
     request: Request,

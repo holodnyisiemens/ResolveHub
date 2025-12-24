@@ -7,7 +7,6 @@ from email.utils import parseaddr
 import requests
 from bs4 import BeautifulSoup
 from config import settings
-
 from sender import send_autoreply_task_created
 
 
