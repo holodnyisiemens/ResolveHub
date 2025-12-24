@@ -39,6 +39,8 @@ class Task(Base):
     assignee_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("employees.id", ondelete="CASCADE"),
         nullable=True,
+        default=None,
+        server_default=None,
     )
 
     created_at: Mapped[datetime] = mapped_column(
