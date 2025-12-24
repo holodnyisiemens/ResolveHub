@@ -10,6 +10,6 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry config virtualenvs.create false && \
     poetry install --only email_worker
 
-COPY workers/email_worker.py ./
+COPY workers/email_worker/ ./
 
-CMD ["python", "-u", "email_worker.py"]
+CMD ["python", "-um", "main"]
