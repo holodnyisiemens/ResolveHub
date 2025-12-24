@@ -1,18 +1,12 @@
 import email
 import imaplib
-import os
 import time
 from email.header import decode_header
 from email.utils import parseaddr
 
 import requests
 from bs4 import BeautifulSoup
-
-IMAP_HOST = os.getenv("IMAP_HOST")
-IMAP_PORT = int(os.getenv("IMAP_PORT"))
-IMAP_USER = os.getenv("IMAP_USER")
-IMAP_PASSWORD = os.getenv("IMAP_PASSWORD")
-API_URL = os.getenv("API_URL")
+from config import settings
 
 
 def fetch_unseen_messages(mail):
@@ -76,7 +70,7 @@ def send_task_to_api(sender, subject, body):
     """Отправляем задачу через HTTP API"""
     try:
         requests.post(
-            f"{API_URL}/tasks",
+            f"{settings.API_URL}/tasks",
             json={
                 "title": subject,
                 "description": body,
@@ -89,8 +83,8 @@ def send_task_to_api(sender, subject, body):
 
 
 def connect_imap():
-    mail = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT)
-    mail.login(IMAP_USER, IMAP_PASSWORD)
+    mail = imaplib.IMAP4_SSL(settings.IMAP_HOST, settings.IMAP_PORT)
+    mail.login(settings.IMAP_USER, settings.IMAP_PASSWORD.get_secret_value())
     print("IMAP worker started and connected")
     return mail
 
