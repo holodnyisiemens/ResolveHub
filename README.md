@@ -79,3 +79,8 @@ docker exec resolvehub-email-worker python -um bin.send_test_email
 ```
 docker exec resolvehub-email-worker python -um bin.email_process_test_worker
 ```
+
+Запуск всех тестов pytest (из корневой директории):
+```
+pytest
+```
