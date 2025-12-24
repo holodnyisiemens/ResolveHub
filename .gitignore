@@ -3,4 +3,3 @@ __pycache__
 .env
 .env.local
 .pytest_cache
-docker-compose.yaml.local

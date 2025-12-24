@@ -31,6 +31,19 @@ services:
       resolvehub-db:
         condition: service_healthy
 
+  email-worker:
+    container_name: resolvehub-email-worker
+    build:
+      context: .
+      dockerfile: Dockerfile.email_worker
+    image: resolvehub-email-worker:latest
+    pull_policy: never
+    env_file:
+      - .env
+    restart: unless-stopped
+    depends_on:
+      - resolvehub
+
 volumes:
   resolvehub_data:
     name: "resolvehub_data"
