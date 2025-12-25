@@ -12,6 +12,7 @@ from app.schemas.task import TaskUpdateDTO
 from app.services.employee_service import EmployeeService
 from app.services.task_service import TaskService
 
+
 router = APIRouter(prefix="/tasks")
 templates = Jinja2Templates(directory="app/templates/html")
 
@@ -108,5 +109,22 @@ async def update_task_page(
 
     return RedirectResponse(
         url=f"/tasks/{task_id}/",
+        status_code=303,
+    )
+
+
+@router.post("/{task_id}/delete")
+async def delete_task_page(
+    task_id: int,
+    task_service: TaskService = Depends(provide_task_service),
+):
+    """
+    Удаление задачи из HTML-интерфейса.
+    Вызывается формой из task_detail.html и после удаления
+    делает редирект на список задач.
+    """
+    await task_service.delete(task_id)
+    return RedirectResponse(
+        url="/tasks/",
         status_code=303,
     )

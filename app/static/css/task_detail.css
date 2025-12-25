@@ -23,14 +23,21 @@
     white-space: pre-wrap;
     margin-top: 10px;
     margin-bottom: 0;
+    text-align: left;
 }
 
+/* Форма изменения статуса/исполнителя – всё вертикально */
 .assign-form {
-    flex-direction: row;
+    display: flex;
+    flex-direction: column;   /* Кнопки и поля друг под другом */
+    gap: 12px;
+    margin-top: 16px;
+    max-width: 300px;         /* Чтобы не расползалось по всей ширине, если не нужно */
 }
 
 .assign-form > div {
-    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
 }
 
 .assign-form label {
@@ -42,10 +49,9 @@
 .assign-form button {
     margin-top: 5px;
     width: 100%;
-    max-width: 300px;
 }
 
-
+/* Кнопка назад */
 .back-link {
     display: inline-block;
     margin: 10px 0;
@@ -55,4 +61,25 @@
 
 .back-link:hover {
     text-decoration: underline;
+}
+
+/* Форма и кнопка удаления – тоже под формой, на всю ширину */
+.delete-form {
+    margin-top: 16px;
+    max-width: 300px;
+}
+
+.delete-button {
+    width: 100%;
+    background-color: #c0392b;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.delete-button:hover {
+    background-color: #e74c3c;
 }
