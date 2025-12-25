@@ -9,28 +9,33 @@ from bs4 import BeautifulSoup
 
 from app.core.config import settings
 from app.email_worker.sender import (
+    send_autoreply_error_creating_task,
     send_autoreply_task_created,
-    send_autoreply_create_folder,
+    send_message_no_folder,
 )
+
+FOLDER_NAME = "resolvehub"
+
+# Таймауты перепроверки наличия писем / переподключения по IMAP
+check_emails_timeout = 5
+reconnect_timeout = 5
+
+# Таймаут проверки наличия папки
+folder_retry_timeout = 60
+
+
+def ensure_folder_selected(mail, folder=FOLDER_NAME):
+    """Проверяет наличие папки"""
+    status, _ = mail.select(folder)
+    if status != "OK":
+        raise RuntimeError(f"Folder '{folder}' not found or not accessible")
 
 
 def fetch_unseen_messages(mail):
-    """
-    Получаем список непрочитанных писем из папки ResolveHub.
-
-    Возвращает:
-    - None  -> папка не найдена/не выбралась;
-    - list  -> список id писем (bytes).
-    """
-    status, _ = mail.select("ResolveHub")  # имя папки чувствительно к регистру
-    if status != "OK":
-        # Папка отсутствует или недоступна
-        return None
-
+    """Возвращает список ID непрочитанных писем в уже выбранной папке"""
     status, data = mail.search(None, "UNSEEN")
-    if status != "OK":
+    if status != "OK" or not data or not data[0]:
         return []
-
     return data[0].split()
 
 
@@ -54,16 +59,23 @@ def get_body(msg):
         for part in msg.walk():
             if part.get_content_type() == "text/plain" and not part.get_filename():
                 charset = part.get_content_charset() or "utf-8"
+
                 return part.get_payload(decode=True).decode(charset, errors="ignore")
+
             elif part.get_content_type() == "text/html" and not part.get_filename():
                 charset = part.get_content_charset() or "utf-8"
+
                 html = part.get_payload(decode=True).decode(charset, errors="ignore")
+
                 return BeautifulSoup(html, "html.parser").get_text()
+
     else:
         charset = msg.get_content_charset() or "utf-8"
         payload = msg.get_payload(decode=True).decode(charset, errors="ignore")
+
         if msg.get_content_type() == "text/html":
             return BeautifulSoup(payload, "html.parser").get_text()
+
         return payload
 
 
@@ -85,7 +97,7 @@ def parse_message(msg_bytes):
 
 
 def send_task_to_api(sender, subject, body) -> bool:
-    """Отправляем задачу через HTTP API."""
+    """Отправляем задачу через API"""
     try:
         response = requests.post(
             f"{settings.API_URL}/tasks",
@@ -100,7 +112,7 @@ def send_task_to_api(sender, subject, body) -> bool:
         return True
 
     except requests.RequestException as e:
-        print(f"Failed to send task: {e}")
+        print(f"Failed to send task: {e}", flush=True)
         return False
 
 
@@ -108,71 +120,87 @@ def connect_imap():
     """Подключение к IMAP-серверу."""
     mail = imaplib.IMAP4_SSL(settings.IMAP_HOST, settings.IMAP_PORT, timeout=10)
     mail.login(settings.IMAP_USER, settings.IMAP_PASSWORD.get_secret_value())
-    print("IMAP worker started and connected")
+    print("IMAP worker started and connected", flush=True)
     return mail
 
 
-def process_mails():
-    """
-    Основной цикл обработки:
-    - читает только папку ResolveHub;
-    - если папки нет, отправляет письмо владельцу и ждёт;
-    - создаёт задачи через API и шлёт автоответ отправителю.
-    """
+def handle_messages(mail, folder, auto_reply_fn=None, need_create_task=False):
+    """Обрабатывает все непрочитанные письма в папке"""
+    ensure_folder_selected(mail, folder)
+
+    msg_ids = fetch_unseen_messages(mail)
+
+    for msg_id in msg_ids:
+        status, msg_data = mail.fetch(msg_id, "(RFC822)")
+        if status != "OK" or not msg_data or not msg_data[0]:
+            print(f"Failed to fetch message {msg_id}, skipping...", flush=True)
+            continue
+
+        sender, subject, body = parse_message(msg_data[0][1])
+        print(f"\nNew email from: {sender} in folder '{folder}'", flush=True)
+        print(f"Subject: {subject}", flush=True)
+
+        if need_create_task:
+            created = send_task_to_api(sender, subject, body)
+            if created and auto_reply_fn:
+                auto_reply_fn(sender, subject, body)
+            elif not created:
+                send_autoreply_error_creating_task(sender, subject, body)
+        elif auto_reply_fn:
+            auto_reply_fn(sender, subject, body)
+
+        mail.store(msg_id, "+FLAGS", "\\Seen")
+
+    return True
+
+
+def main():
     mail = connect_imap()
-    folder_warning_sent = False  # чтобы не спамить инструкциями
+    no_folder_message_sent = False
 
     while True:
         try:
-            msg_ids = fetch_unseen_messages(mail)
+            try:
+                # Обработка resolvehub
+                handle_messages(
+                    mail,
+                    folder=FOLDER_NAME,
+                    auto_reply_fn=send_autoreply_task_created,
+                    need_create_task=True,
+                )
+                # Обработка INBOX
+                handle_messages(
+                    mail,
+                    folder="INBOX",
+                    auto_reply_fn=send_autoreply_error_creating_task,
+                    need_create_task=False,
+                )
+                no_folder_message_sent = False
 
-            # Папка не найдена
-            if msg_ids is None:
-                if not folder_warning_sent:
-                    print(
-                        "Папка ResolveHub не найдена. "
-                        "Отправляем владельцу ящика инструкцию.",
-                        flush=True,
-                    )
-                    # письмо отправляем на IMAP_USER – это владелец ящика
-                    send_autoreply_create_folder(to_email=settings.IMAP_USER)
-                    folder_warning_sent = True
-
-                # ждём, пока пользователь создаст папку
-                time.sleep(30)
+            except RuntimeError as e:
+                print(f"Folder error: {e}", flush=True)
+                if not no_folder_message_sent:
+                    send_message_no_folder()
+                    no_folder_message_sent = True
+                try:
+                    mail.logout()
+                except Exception:
+                    pass
+                time.sleep(folder_retry_timeout)
+                mail = connect_imap()
                 continue
 
-            # Папка появилась — можно снова отправлять задачи и автоответы
-            if folder_warning_sent:
-                print("Папка ResolveHub обнаружена, продолжаем обработку писем.", flush=True)
-            folder_warning_sent = False
+            time.sleep(check_emails_timeout)
 
-            for msg_id in msg_ids:
-                _, msg_data = mail.fetch(msg_id, "(RFC822)")
-                sender, subject, body = parse_message(msg_data[0][1])
-
-                print(f"\nNew email from: {sender}", flush=True)
-                print(f"Subject: {subject}", flush=True)
-
-                created = send_task_to_api(sender, subject, body)
-                if created:
-                    # Отправка автоответа отправителю письма
-                    send_autoreply_task_created(
-                        to_email=sender,
-                        subject=subject,
-                        body=body,
-                    )
-
-                # Помечаем письмо как прочитанное
-                mail.store(msg_id, "+FLAGS", "\\Seen")
-
-            time.sleep(5)
-
-        except imaplib.IMAP4.error as e:
-            print(f"IMAP error: {e}. Reconnecting...", flush=True)
-            time.sleep(5)
+        except (imaplib.IMAP4.abort, imaplib.IMAP4.error) as e:
+            print(f"IMAP error: {e}, reconnecting...", flush=True)
+            try:
+                mail.logout()
+            except Exception:
+                pass
+            time.sleep(reconnect_timeout)
             mail = connect_imap()
 
         except Exception as e:
             print(f"Unexpected error: {e}", flush=True)
-            time.sleep(5)
+            time.sleep(check_emails_timeout)

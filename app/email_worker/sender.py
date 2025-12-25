@@ -6,7 +6,6 @@ from pathlib import Path
 
 from app.core.config import settings
 
-
 TEMPLATES_DIR = Path("app") / "templates" / "email"
 
 
@@ -23,6 +22,13 @@ def send_autoreply(template_file: str, to_email: str, subject: str, body: str) -
         print("SMTP настройки отсутствуют, автоответ пропущен", flush=True)
         return
 
+    if to_email == settings.IMAP_USER:
+        print(
+            f"Пользователю {settings.IMAP_USER} письма не отправляются для избежания цикла",
+            flush=True,
+        )
+        return
+
     template_path = TEMPLATES_DIR / template_file
     try:
         template = template_path.read_text(encoding="utf-8")
@@ -31,9 +37,8 @@ def send_autoreply(template_file: str, to_email: str, subject: str, body: str) -
         return
 
     body_preview = body[:300] + ("..." if len(body) > 300 else "")
-    message_text = (
-        template.replace("{{ subject }}", subject)
-        .replace("{{ body_preview }}", body_preview)
+    message_text = template.replace("{{ subject }}", subject).replace(
+        "{{ body_preview }}", body_preview
     )
 
     msg = MIMEMultipart()
@@ -71,9 +76,18 @@ def send_autoreply(template_file: str, to_email: str, subject: str, body: str) -
 
 def send_autoreply_task_created(to_email: str, subject: str, body: str) -> None:
     """Автоответ при создании задачи из письма."""
-    # шаблон task_created.txt: использует {{ subject }} и {{ body_preview }}
     send_autoreply(
         template_file="task_created.txt",
+        to_email=to_email,
+        subject=f"Re: {subject}",
+        body=body,
+    )
+
+
+def send_autoreply_error_creating_task(to_email: str, subject: str, body: str) -> None:
+    """Автоответ при ошибке создания задачи."""
+    send_autoreply(
+        template_file="error_creating_task.txt",
         to_email=to_email,
         subject=f"Re: {subject}",
         body=body,
@@ -90,26 +104,11 @@ def send_autoreply_task_done(to_email: str, subject: str, body: str) -> None:
     )
 
 
-def send_autoreply_create_folder(to_email: str) -> None:
-    """
-    Письмо владельцу ящика, если папка ResolveHub отсутствует.
-
-    Можно сделать отдельный шаблон create_folder.txt, тогда
-    в body можно передать, например, краткую инструкцию.
-    """
-    subject = "Настройка папки ResolveHub для почтового воркера"
-    body = (
-        "Почтовый воркер ResolveHub не нашёл папку 'ResolveHub' в вашем ящике.\n\n"
-        "Пожалуйста, создайте папку 'ResolveHub' и настройте фильтр, чтобы "
-        "нужные письма перемещались в неё. После этого воркер начнёт "
-        "обрабатывать только письма из этой папки."
-    )
-
-    # Можно вынести в отдельный шаблон create_folder.txt,
-    # но для простоты переиспользуем универсальный механизм.
+def send_message_no_folder() -> None:
+    """Сообщение при отсутсвии папки"""
     send_autoreply(
-        template_file="task_created.txt",  # при желании замени на create_folder.txt
-        to_email=to_email,
-        subject=subject,
-        body=body,
+        template_file="create_folder.txt",
+        to_email=settings.IMAP_USER,
+        subject="[resolvehub] Internal ResolveHub Error",
+        body="",
     )
