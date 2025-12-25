@@ -117,11 +117,7 @@ async def delete_task_page(
     task_id: int,
     task_service: TaskService = Depends(provide_task_service),
 ):
-    """
-    Удаление задачи из HTML-интерфейса.
-    Вызывается формой из task_detail.html и после удаления
-    делает редирект на список задач.
-    """
+    """Удаление задачи из интерфейса и редирект на список задач."""
     await task_service.delete(task_id)
     return RedirectResponse(
         url="/tasks/",
