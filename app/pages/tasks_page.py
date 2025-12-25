@@ -12,7 +12,6 @@ from app.schemas.task import TaskUpdateDTO
 from app.services.employee_service import EmployeeService
 from app.services.task_service import TaskService
 
-
 router = APIRouter(prefix="/tasks")
 templates = Jinja2Templates(directory="app/templates/html")
 
