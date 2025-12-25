@@ -33,14 +33,13 @@ async def create_task(
     return await task_service.create(task_data)
 
 
-@router.delete("/{task_id:int}")
+@router.delete("/{task_id:int}", response_model=None)
 async def delete_task(
     task_id: int,
     task_service: TaskService = Depends(provide_task_service),
 ):
-    """Удалить задачу (REST API, JSON)"""
-    await task_service.delete(task_id)
-    return {"status": "deleted", "task_id": task_id}
+    """Удалить задачу"""
+    return await task_service.delete(task_id)
 
 
 @router.put("/{task_id:int}", response_model=TaskDTO)
