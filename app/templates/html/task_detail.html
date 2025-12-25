@@ -19,38 +19,49 @@
         <div><strong>Автор:</strong> {{ task.creator_email }}</div>
         <div><strong>Создана:</strong> {{ task.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
 
-    
+        <!-- Форма изменения статуса и исполнителя -->
         <form method="post" class="assign-form">
             <div>
-            <label for="status">Статус:</label>
-            <select name="status" id="status">
-                {% for s in status_options %}
-                    <option value="{{ s.value }}" {% if task.status.value == s.value %}selected{% endif %}>
-                        {{ s.value }}
-                    </option>
-                {% endfor %}
-            </select>
+                <label for="status">Статус:</label>
+                <select name="status" id="status">
+                    {% for s in status_options %}
+                        <option value="{{ s.value }}" {% if task.status.value == s.value %}selected{% endif %}>
+                            {{ s.value }}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
 
             <div>
-            <label for="assignee_id">Исполнитель:</label>
-            <select name="assignee_id" id="assignee_id">
-                <option value="">— не назначен —</option>
-                {% for emp in employees %}
-                    <option value="{{ emp.id }}" {% if task.assignee_id == emp.id %}selected{% endif %}>
-                        {{ emp.username }} ({{ emp.email }})
-                    </option>
-                {% endfor %}
-            </select>
+                <label for="assignee_id">Исполнитель:</label>
+                <select name="assignee_id" id="assignee_id">
+                    <option value="">— не назначен —</option>
+                    {% for emp in employees %}
+                        <option value="{{ emp.id }}" {% if task.assignee_id == emp.id %}selected{% endif %}>
+                            {{ emp.username }} ({{ emp.email }})
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
+
             <button type="submit">Сохранить</button>
         </form>
 
+        <!-- Форма удаления задачи: бьёт в POST /tasks/{id}/delete -->
+        <form method="post"
+              action="/tasks/{{ task.id }}/delete"
+              class="delete-form">
+            <button type="submit"
+                    class="delete-button"
+                    onclick="return confirm('Точно удалить эту задачу?');">
+                Удалить задачу
+            </button>
+        </form>
 
-        <div class="task-description">
+        <div class="task-description" style="text-align: left;">
 {{ task.description or 'Описание отсутствует' }}
         </div>
-    </div>
+
 </div>
 
 </body>

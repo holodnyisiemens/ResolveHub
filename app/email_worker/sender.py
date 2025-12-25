@@ -9,8 +9,8 @@ from app.core.config import settings
 TEMPLATES_DIR = Path("app") / "templates" / "email"
 
 
-def send_autoreply(template_file: str, to_email: str, subject: str, body: str):
-    """Отправляет автоответ пользователю"""
+def send_autoreply(template_file: str, to_email: str, subject: str, body: str) -> None:
+    """Отправляет автоответ пользователю по шаблону."""
     if not all(
         [
             settings.SMTP_HOST,
@@ -22,8 +22,19 @@ def send_autoreply(template_file: str, to_email: str, subject: str, body: str):
         print("SMTP настройки отсутствуют, автоответ пропущен", flush=True)
         return
 
+    if to_email == settings.IMAP_USER:
+        print(
+            f"Пользователю {settings.IMAP_USER} письма не отправляются для избежания цикла",
+            flush=True,
+        )
+        return
+
     template_path = TEMPLATES_DIR / template_file
-    template = template_path.read_text(encoding="utf-8")
+    try:
+        template = template_path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        print(f"Шаблон письма не найден: {template_path}", flush=True)
+        return
 
     body_preview = body[:300] + ("..." if len(body) > 300 else "")
     message_text = template.replace("{{ subject }}", subject).replace(
@@ -33,7 +44,7 @@ def send_autoreply(template_file: str, to_email: str, subject: str, body: str):
     msg = MIMEMultipart()
     msg["From"] = settings.SMTP_USER
     msg["To"] = to_email
-    msg["Subject"] = f"Re: {subject}"
+    msg["Subject"] = subject
     msg["Reply-To"] = settings.SMTP_USER
 
     msg.attach(MIMEText(message_text, "plain", "utf-8"))
@@ -64,8 +75,40 @@ def send_autoreply(template_file: str, to_email: str, subject: str, body: str):
 
 
 def send_autoreply_task_created(to_email: str, subject: str, body: str) -> None:
-    send_autoreply("task_created.txt", to_email, subject, body)
+    """Автоответ при создании задачи из письма."""
+    send_autoreply(
+        template_file="task_created.txt",
+        to_email=to_email,
+        subject=f"Re: {subject}",
+        body=body,
+    )
+
+
+def send_autoreply_error_creating_task(to_email: str, subject: str, body: str) -> None:
+    """Автоответ при ошибке создания задачи."""
+    send_autoreply(
+        template_file="error_creating_task.txt",
+        to_email=to_email,
+        subject=f"Re: {subject}",
+        body=body,
+    )
 
 
 def send_autoreply_task_done(to_email: str, subject: str, body: str) -> None:
-    send_autoreply("task_done.txt", to_email, subject, body)
+    """Автоответ при завершении задачи (если понадобится)."""
+    send_autoreply(
+        template_file="task_done.txt",
+        to_email=to_email,
+        subject=f"Re: {subject}",
+        body=body,
+    )
+
+
+def send_message_no_folder() -> None:
+    """Сообщение при отсутсвии папки"""
+    send_autoreply(
+        template_file="create_folder.txt",
+        to_email=settings.IMAP_USER,
+        subject="[resolvehub] Internal ResolveHub Error",
+        body="",
+    )
