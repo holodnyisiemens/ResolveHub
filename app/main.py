@@ -16,14 +16,14 @@ app = FastAPI(title="ResolveHub")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Middleware для сессий и для работы AdminAuth
-app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
+app.add_middleware(SessionMiddleware, secret_key=settings.JWT_SECRET_KEY)
 
 # Подключаем админку
 admin = Admin(
     app,
     async_engine,
     title="Admin Panel",
-    authentication_backend=AdminAuth(secret_key=settings.SECRET_KEY),
+    authentication_backend=AdminAuth(secret_key=settings.JWT_SECRET_KEY),
 )
 
 # Регистрируем представления моделей в админке

@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: SecretStr
     DB_NAME: str
-    SECRET_KEY: str
+    JWT_SECRET_KEY: str
 
     SMTP_HOST: str
     SMTP_PORT: int
