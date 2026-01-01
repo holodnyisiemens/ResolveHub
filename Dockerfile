@@ -21,5 +21,7 @@ COPY app /app/app/
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
+COPY certs /app/certs
+
 ENTRYPOINT ["/bin/bash", "/app/entrypoint.sh"]
 CMD ["python", "-m", "app.main"]
