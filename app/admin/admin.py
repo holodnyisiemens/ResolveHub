@@ -4,7 +4,7 @@ from fastapi import Request
 from sqladmin import ModelView
 from wtforms import PasswordField
 
-from app.core.security import get_password_hash
+from app.auth import utils as auth_utils
 from app.models.employee import Employee
 from app.models.task import Task
 
@@ -50,7 +50,7 @@ class EmployeeAdmin(ModelView, model=Employee):
 
         # Если пароль введён — хэшируем
         if password:
-            data["hashed_password"] = get_password_hash(password)
+            data["hashed_password"] = auth_utils.hash_password(password)
 
         await super().on_model_change(data, model, is_created, request)
 

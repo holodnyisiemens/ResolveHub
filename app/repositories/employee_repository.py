@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import get_password_hash
+from app.auth import utils as auth_utils
 from app.models.employee import Employee
 from app.schemas.employee import EmployeeAddDTO, EmployeeUpdateDTO
 
@@ -16,7 +16,7 @@ class EmployeeRepository:
         return await self.session.get(Employee, employee_id)
 
     async def create(self, employee_data: EmployeeAddDTO) -> Employee:
-        hashed_password = get_password_hash(employee_data.password)
+        hashed_password = auth_utils.hash_password(employee_data.password)
         employee_dict = employee_data.model_dump(exclude={"password"})
 
         employee = Employee(**employee_dict, hashed_password=hashed_password)
