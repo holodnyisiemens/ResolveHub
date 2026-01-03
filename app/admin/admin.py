@@ -2,7 +2,6 @@ from typing import Any
 
 from fastapi import Request
 from sqladmin import ModelView
-from wtforms import PasswordField
 
 from app.auth import utils as auth_utils
 from app.models.employee import Employee
@@ -26,13 +25,12 @@ class EmployeeAdmin(ModelView, model=Employee):
         Employee.is_superuser,
     ]
 
-    # Переопределяем виджет для скрытия пароля
-    form_overrides = {
-        "hashed_password": PasswordField,
-    }
-
-    column_labels = {
-        Employee.hashed_password: "Password",
+    form_args = {
+        "hashed_password": {
+            "label": "Password",
+            "description": "Required when creating a user. Leave empty to keep current password.",
+            "validators": [],
+        }
     }
 
     async def on_model_change(
@@ -48,7 +46,7 @@ class EmployeeAdmin(ModelView, model=Employee):
         if is_created and not password:
             raise ValueError("Password is required")
 
-        # Если пароль введён — хэшируем
+        # Если пароль введён - хэшируем
         if password:
             data["hashed_password"] = auth_utils.hash_password(password)
 
