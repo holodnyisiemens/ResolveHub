@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from app.api.v1.auth import router as auth_router
 from app.api.v1.employee import router as employee_router
 from app.api.v1.task import router as task_router
 from app.core.config import settings
@@ -14,4 +15,9 @@ router.include_router(
 router.include_router(
     task_router,
     prefix=settings.api.v1.tasks,
+)
+
+router.include_router(
+    auth_router,
+    prefix=settings.api.v1.auth,
 )

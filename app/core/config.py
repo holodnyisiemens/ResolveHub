@@ -15,6 +15,7 @@ class ApiV1Prefix(BaseModel):
     prefix: str = "/v1"
     employees: str = "/employees"
     tasks: str = "/tasks"
+    auth: str = "/auth"
 
 
 class ApiPrefix(BaseModel):
@@ -26,7 +27,7 @@ class AuthJWT(BaseModel):
     private_key_path: Path = BASE_DIR / "certs" / "jwt-private.pem"
     public_key_path: Path = BASE_DIR / "certs" / "jwt-public.pem"
     algorithm: str = "RS256"
-    access_token_expire_minutes: int = 3
+    access_token_expire_minutes: int = 10
 
 
 class Settings(BaseSettings):
@@ -73,6 +74,10 @@ class Settings(BaseSettings):
             f"postgresql+psycopg://{self.DB_USER}:{self.DB_PASSWORD.get_secret_value()}@"
             f"{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
         )
+
+    @property
+    def token_url(self) -> str:
+        return f"{self.api.prefix}" f"{self.api.v1.prefix}" f"{self.api.v1.auth}/login"
 
 
 settings = Settings()
