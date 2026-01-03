@@ -2,8 +2,8 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
 
+from app.auth import utils as auth_utils
 from app.core.database import async_session_factory
-from app.core.security import verify_password
 from app.repositories.employee_repository import EmployeeRepository
 
 security = HTTPBasic()
@@ -22,8 +22,9 @@ class AdminAuth(AuthenticationBackend):
         async with async_session_factory() as session:
             repo = EmployeeRepository(session)
             employee = await repo.get_by_username(username)
-            if employee and verify_password(password, employee.hashed_password):
-                # Можно проверить secret_key для токена сессии или пропустить
+            if employee and auth_utils.validate_password(
+                password, employee.hashed_password
+            ):
                 request.session.update({"token": self.secret_key})
                 return True
         return False
