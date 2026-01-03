@@ -1,22 +1,22 @@
-from typing import Optional
+from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class TokenInfo(BaseModel):
-    """Схема для JWT токена"""
-
     access_token: str
     token_type: str
 
 
-# class TokenData(BaseModel):
-#     """Данные, которые хранятся в JWT токене (payload)"""
-#     username: Optional[str] = None
-#     user_id: Optional[int] = None
+class TokenData(BaseModel):
+    sub: str
+    username: str
+    email: EmailStr
+    exp: int
+    iat: int
 
 
-# class UserLogin(BaseModel):
-#     """Схема для входа пользователя"""
-#     username: str
-#     password: str
+class MeResponse(BaseModel):
+    username: str
+    email: EmailStr
+    logged_in_at: datetime
